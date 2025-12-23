@@ -7,18 +7,13 @@
     <style>
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: #FFF5F7; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; min-height: 100vh; }
-        
-        /* 登入彈窗 */
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; display: flex; align-items: center; justify-content: center; }
         .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 300px; }
         .login-box input { width: 100%; padding: 10px; margin: 15px 0; border: 2px solid #FFB6C1; border-radius: 10px; font-size: 1rem; text-align: center; }
         .btn-login { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; }
-        
         .vip-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 10px; border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
         .user-info { font-size: 0.9rem; color: #666; margin-bottom: 5px; }
         .user-info b { color: #D02090; }
-
-        /* 模式切換 */
         .mode-switch { background: #FDF2F4; padding: 8px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.85rem; margin-top: 8px; }
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -26,27 +21,22 @@
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #D02090; }
         input:checked + .slider:before { transform: translateX(24px); }
-
-        /* 排行榜 */
         .leaderboard { width: 100%; max-width: 340px; background: white; border-radius: 20px; padding: 15px; margin-top: 20px; border: 2px solid #FFD700; }
         .leaderboard h3 { margin: 0 0 10px 0; color: #B8860B; font-size: 1.1rem; text-align: center; }
         .score-container { max-height: 250px; overflow-y: auto; }
         .score-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; }
         .rank { font-weight: bold; color: #D02090; width: 35px; }
-
-        /* 指板 */
         #erhu-neck { position: relative; width: 100px; height: 320px; background: #3d2b1f; border-radius: 10px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; margin: 10px 0; }
         .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #999, #eee, #999); }
         .fret { position: absolute; width: 40px; height: 40px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -19px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 3; color: #333; cursor: pointer; }
         .pos-0 { top: 30px; } .pos-1 { top: 100px; } .pos-2 { top: 180px; } .pos-3 { top: 230px; }
-        
         #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 80%; max-width: 280px; cursor: pointer; font-size: 1.1rem; }
         #btn-game-start:disabled { background: #ccc; cursor: not-allowed; }
         #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; height: 25px; text-align: center; }
+        .footer-link { margin-top: 15px; text-decoration: none; color: #D02090; font-size: 0.85rem; border: 1px solid #FFB6C1; padding: 5px 15px; border-radius: 20px; background: white; }
     </style>
 </head>
 <body>
-
     <div id="login-overlay">
         <div class="login-box">
             <h3>創立音樂名冊</h3>
@@ -59,12 +49,10 @@
     <div class="vip-card">
         <div class="user-info">挑戰者：<b id="display-name">訪客</b></div>
         <b>🎻 羅常秦老師⎜音感訓練大師</b>
-        
         <div style="display:flex; justify-content: space-around; font-size: 0.9rem; color: #D02090; margin-top:5px;">
             <div>🔥 目前連擊：<span id="combo-now">0</span></div>
             <div>🏆 最高紀錄：<span id="combo-max">0</span></div>
         </div>
-
         <div class="mode-switch">
             <span>挑戰模式</span>
             <label class="switch">
@@ -75,7 +63,7 @@
         </div>
     </div>
 
-    <div id="game-status">準備好了嗎？</div>
+    <div id="game-status">載入中...</div>
 
     <div id="erhu-neck">
         <div class="string">
@@ -99,6 +87,8 @@
         <div class="score-container" id="score-list"></div>
     </div>
 
+    <a href="https://www.facebook.com/erhutslo/" target="_blank" class="footer-link">🔗 跨界二胡玩家羅常秦｜粉專</a>
+
     <script>
         let currentUser = localStorage.getItem('erhuUserName') || "";
         let comboCount = 0;
@@ -118,7 +108,6 @@
 
         function toggleMode() {
             isPracticeMode = document.getElementById('mode-toggle').checked;
-            // 這裡指向正確的遊戲按鈕 ID
             document.getElementById('btn-game-start').disabled = isPracticeMode;
             document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實音色與唱名" : "挑戰模式：請聽音辨位";
             comboCount = 0;
@@ -146,13 +135,17 @@
 
         function playErhuFile(num) {
             let fileName = (num === 8) ? 'd_high1.mp3' : `d${num}.mp3`;
-            const audio = new Audio(fileName);
-            audio.play().catch(e => console.log("音檔載入中"));
+            new Audio(fileName).play().catch(e => console.log("音檔讀取中"));
         }
 
         function playVoiceName(num) {
-            const audio = new Audio(`v${num}.mp3`);
-            audio.play().catch(e => console.log("唱名載入中"));
+            new Audio(`v${num}.mp3`).play().catch(e => console.log("唱名讀取中"));
+        }
+
+        // 補回勝負音效函式
+        function playSoundFile(type) {
+            let fileName = (type === 'win') ? `win${Math.floor(Math.random() * 20) + 1}.mp3` : `lose.mp3`;
+            new Audio(fileName).play().catch(e => console.log("效音讀取中"));
         }
 
         function handleFretClick(num) {
@@ -168,10 +161,12 @@
                         maxCombo = comboCount;
                         localStorage.setItem('erhuMaxCombo', maxCombo);
                     }
+                    playSoundFile('win'); // 觸發答對音效
                     updateUI("✨ 正確！");
                     currentNote = 0;
                 } else {
                     comboCount = 0;
+                    playSoundFile('lose'); // 觸發答錯音效
                     updateUI("❌ 斷掉了！");
                 }
             }
