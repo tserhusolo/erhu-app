@@ -2,32 +2,123 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>羅常秦二胡音感 - 真實音色修正版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>羅常秦老師⎜音感訓練大師</title>
     <style>
-        body { background: #FFF5F7; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; transition: 0.3s; }
-        .vip-card { background: white; padding: 20px; border-radius: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 20px; border: 2px solid #FFB6C1; text-align: center; width: 340px; }
-        .vip-card b { color: #D02090; font-size: 1.2rem; }
-        .mode-switch { background: #FDF2F4; padding: 10px; border-radius: 15px; margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .switch { position: relative; display: inline-block; width: 60px; height: 30px; }
+        * { box-sizing: border-box; touch-action: manipulation; }
+        body { 
+            background: #FFF5F7; 
+            font-family: "Microsoft JhengHei", sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 10px; 
+            margin: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .vip-card { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            margin-bottom: 15px; 
+            border: 2px solid #FFB6C1; 
+            text-align: center; 
+            width: 100%;
+            max-width: 340px; 
+        }
+        .vip-card b { color: #D02090; font-size: 1.1rem; display: block; margin-bottom: 5px; }
+        
+        .mode-switch { 
+            background: #FDF2F4; 
+            padding: 8px; 
+            border-radius: 12px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #D02090; }
-        input:checked + .slider:before { transform: translateX(30px); }
+        input:checked + .slider:before { transform: translateX(24px); }
         .mode-label { font-weight: bold; color: #D02090; }
-        #game-status { color: #D02090; font-weight: bold; font-size: 1.3rem; margin-bottom: 20px; height: 35px; text-align: center; }
-        #erhu-neck { position: relative; width: 120px; height: 500px; background: #3d2b1f; border-radius: 10px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); }
-        .string { position: relative; width: 3px; height: 100%; background: linear-gradient(to right, #999, #eee, #999); z-index: 1; }
-        .qianjin { position: absolute; top: 60px; width: 140px; height: 8px; background: #FF4444; left: -10px; z-index: 2; border-radius: 4px; }
-        .fret { position: absolute; width: 45px; height: 45px; background: white; border: 3px solid #FFB6C1; border-radius: 50%; left: -21px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.1s; z-index: 3; font-weight: bold; color: #333; font-size: 1.2rem; }
-        .pos-0 { top: 40px; } .pos-1 { top: 150px; } .pos-2 { top: 260px; } .pos-3 { top: 315px; }
-        #btn-start { background: #D02090; color: white; border: none; padding: 15px 50px; border-radius: 40px; font-size: 1.3rem; font-weight: bold; cursor: pointer; margin-top: 30px; box-shadow: 0 5px 15px rgba(208, 32, 144, 0.4); }
-        #btn-start:disabled { background: #ccc; cursor: not-allowed; }
+
+        #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; height: 30px; text-align: center; width: 100%; }
+
+        #erhu-neck { 
+            position: relative; 
+            width: 110px; 
+            height: 420px; 
+            background: #3d2b1f; 
+            border-radius: 10px; 
+            border: 4px solid #2a1d15; 
+            display: flex; 
+            justify-content: space-around; 
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+            margin: 5px 0;
+        }
+        .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #999, #eee, #999); z-index: 1; }
+        .qianjin { position: absolute; top: 50px; width: 120px; height: 6px; background: #FF4444; left: -5px; z-index: 2; border-radius: 4px; }
+        .fret { 
+            position: absolute; 
+            width: 42px; 
+            height: 42px; 
+            background: white; 
+            border: 3px solid #FFB6C1; 
+            border-radius: 50%; 
+            left: -20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            z-index: 3; 
+            font-weight: bold; 
+            color: #333; 
+            font-size: 1.1rem; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .pos-0 { top: 35px; } .pos-1 { top: 130px; } .pos-2 { top: 220px; } .pos-3 { top: 270px; }
+
+        #btn-start { 
+            background: #D02090; 
+            color: white; 
+            border: none; 
+            padding: 12px 40px; 
+            border-radius: 30px; 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            cursor: pointer; 
+            margin-top: 15px; 
+            box-shadow: 0 4px 12px rgba(208, 32, 144, 0.3); 
+            width: 80%;
+            max-width: 280px;
+        }
+        #btn-start:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+
+        .footer-link {
+            margin-top: 25px;
+            text-decoration: none;
+            color: #D02090;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 20px;
+            background: white;
+            border-radius: 50px;
+            border: 1px solid #FFB6C1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
     </style>
 </head>
 <body>
     <div class="vip-card">
-        <b>💎 VIP 16：首席傳承大師</b>
+        <b>🎻 羅常秦老師⎜音感訓練大師</b>
         <div class="mode-switch">
             <span>挑戰模式</span>
             <label class="switch">
@@ -38,7 +129,7 @@
         </div>
     </div>
 
-    <div id="game-status">練習模式：聽老師真實錄音</div>
+    <div id="game-status">載入中...</div>
 
     <div id="erhu-neck">
         <div class="qianjin"></div>
@@ -58,6 +149,10 @@
 
     <button id="btn-start" onclick="nextQuestion()" disabled>🎧 播放題目音</button>
 
+    <a href="https://www.facebook.com/erhutslo/" target="_blank" class="footer-link">
+        🔗 跨界二胡玩家羅常秦｜粉絲專頁
+    </a>
+
     <script>
         let currentNote = 0;
         let isPracticeMode = true;
@@ -65,21 +160,20 @@
         function toggleMode() {
             isPracticeMode = document.getElementById('mode-toggle').checked;
             document.getElementById('btn-start').disabled = isPracticeMode;
-            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實二胡與唱名" : "挑戰模式：開始聽音抽獎";
+            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實音色與唱名" : "挑戰模式：聽音辨位測試中";
             document.body.style.background = "#FFF5F7";
         }
 
         function playErhuFile(num) {
-            // 自動判斷：第 8 個音使用 d_high1.mp3，其餘使用 d{num}.mp3
             let fileName = (num === 8) ? 'd_high1.mp3' : `d${num}.mp3`;
             const audio = new Audio(fileName);
             audio.currentTime = 0;
-            audio.play().catch(e => console.log("請檢查音檔是否存在：" + fileName));
+            audio.play().catch(e => console.log("音檔讀取中..."));
         }
 
         function playVoiceName(num) {
             const audio = new Audio(`v${num}.mp3`);
-            audio.play().catch(e => console.log(`缺少唱名音檔 v${num}.mp3`));
+            audio.play().catch(e => console.log(`缺少 v${num}.mp3`));
         }
 
         function playSoundFile(type) {
@@ -110,7 +204,7 @@
         function nextQuestion() {
             currentNote = Math.floor(Math.random() * 8) + 1;
             playErhuFile(currentNote);
-            document.getElementById('game-status').innerText = "請聽音辨位";
+            document.getElementById('game-status').innerText = "請在指板按出剛才的音";
             document.body.style.background = "#FFF5F7";
         }
 
