@@ -22,7 +22,7 @@
             padding: 15px; 
             border-radius: 20px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
-            margin-bottom: 15px; 
+            margin-bottom: 10px; 
             border: 2px solid #FFB6C1; 
             text-align: center; 
             width: 100%;
@@ -30,6 +30,19 @@
         }
         .vip-card b { color: #D02090; font-size: 1.1rem; display: block; margin-bottom: 5px; }
         
+        /* 連續答對計分板 */
+        .combo-box {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            padding: 5px;
+            background: #FFF0F5;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #D02090;
+        }
+        .combo-box span { font-weight: bold; font-size: 1.1rem; }
+
         .mode-switch { 
             background: #FDF2F4; 
             padding: 8px; 
@@ -38,7 +51,8 @@
             align-items: center; 
             justify-content: center; 
             gap: 10px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            margin-top: 8px;
         }
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -46,14 +60,13 @@
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #D02090; }
         input:checked + .slider:before { transform: translateX(24px); }
-        .mode-label { font-weight: bold; color: #D02090; }
 
         #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin-bottom: 10px; height: 30px; text-align: center; width: 100%; }
 
         #erhu-neck { 
             position: relative; 
             width: 110px; 
-            height: 420px; 
+            height: 400px; 
             background: #3d2b1f; 
             border-radius: 10px; 
             border: 4px solid #2a1d15; 
@@ -80,9 +93,8 @@
             font-weight: bold; 
             color: #333; 
             font-size: 1.1rem; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .pos-0 { top: 35px; } .pos-1 { top: 130px; } .pos-2 { top: 220px; } .pos-3 { top: 270px; }
+        .pos-0 { top: 35px; } .pos-1 { top: 125px; } .pos-2 { top: 215px; } .pos-3 { top: 265px; }
 
         #btn-start { 
             background: #D02090; 
@@ -98,27 +110,32 @@
             width: 80%;
             max-width: 280px;
         }
-        #btn-start:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+        #btn-start:disabled { background: #ccc; cursor: not-allowed; }
 
         .footer-link {
-            margin-top: 25px;
+            margin-top: 20px;
             text-decoration: none;
             color: #D02090;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 5px;
-            padding: 10px 20px;
+            padding: 8px 15px;
             background: white;
             border-radius: 50px;
             border: 1px solid #FFB6C1;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
     </style>
 </head>
 <body>
     <div class="vip-card">
         <b>🎻 羅常秦老師⎜音感訓練大師</b>
+        
+        <div class="combo-box">
+            <div>🔥 目前連擊：<span id="combo-now">0</span></div>
+            <div>🏆 最高紀錄：<span id="combo-max">0</span></div>
+        </div>
+
         <div class="mode-switch">
             <span>挑戰模式</span>
             <label class="switch">
@@ -156,19 +173,30 @@
     <script>
         let currentNote = 0;
         let isPracticeMode = true;
+        let comboCount = 0;
+        let maxCombo = 0;
 
         function toggleMode() {
             isPracticeMode = document.getElementById('mode-toggle').checked;
             document.getElementById('btn-start').disabled = isPracticeMode;
             document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實音色與唱名" : "挑戰模式：聽音辨位測試中";
             document.body.style.background = "#FFF5F7";
+            
+            // 切換模式時，連擊數重計
+            comboCount = 0;
+            updateComboUI();
+        }
+
+        function updateComboUI() {
+            document.getElementById('combo-now').innerText = comboCount;
+            document.getElementById('combo-max').innerText = maxCombo;
         }
 
         function playErhuFile(num) {
             let fileName = (num === 8) ? 'd_high1.mp3' : `d${num}.mp3`;
             const audio = new Audio(fileName);
             audio.currentTime = 0;
-            audio.play().catch(e => console.log("音檔讀取中..."));
+            audio.play().catch(e => console.log("讀取中..."));
         }
 
         function playVoiceName(num) {
@@ -189,13 +217,20 @@
             } else {
                 if (currentNote === 0) return;
                 if (num === currentNote) {
+                    comboCount++;
+                    if (comboCount > maxCombo) maxCombo = comboCount;
+                    updateComboUI();
+                    
                     playSoundFile('win');
-                    document.getElementById('game-status').innerText = "✨ 音準正確！";
+                    document.getElementById('game-status').innerText = `✨ 正確！連擊 ${comboCount}`;
                     document.body.style.background = "#E8F5E9";
                     currentNote = 0;
                 } else {
+                    comboCount = 0; // 答錯重計
+                    updateComboUI();
+                    
                     playSoundFile('lose');
-                    document.getElementById('game-status').innerText = "❌ 再試一次";
+                    document.getElementById('game-status').innerText = "❌ 答錯了，連擊中斷！";
                     document.body.style.background = "#FFEBEE";
                 }
             }
@@ -204,7 +239,7 @@
         function nextQuestion() {
             currentNote = Math.floor(Math.random() * 8) + 1;
             playErhuFile(currentNote);
-            document.getElementById('game-status').innerText = "請在指板按出剛才的音";
+            document.getElementById('game-status').innerText = "請按出剛才的音...";
             document.body.style.background = "#FFF5F7";
         }
 
