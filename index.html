@@ -13,10 +13,11 @@
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .login-box { background: white; padding: 30px; border-radius: 25px; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 15px 35px rgba(208,32,144,0.2); }
         
-        /* 清爽的卡片，已移除上方所有標籤與 Logo */
-        .vip-card { background: white; padding: 20px 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
+        /* 資訊卡片：純淨置中風格 */
+        .vip-card { background: white; padding: 25px 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
+        .main-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; color: #333; }
         
-        .switch-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; cursor: pointer; }
+        .switch-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 12px; cursor: pointer; }
         .switch-box { position: relative; width: 50px; height: 26px; background-color: #ccc; border-radius: 13px; transition: 0.3s; }
         .switch-ball { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: 0.3s; }
         .is-practice .switch-box { background-color: #D02090; }
@@ -32,7 +33,7 @@
 
         .leaderboard-box { background: white; border: 2px solid #FFD700; border-radius: 15px; padding: 15px; width: 100%; max-width: 340px; margin-top: 15px; }
         
-        /* 底部版權與 Logo 混合排版 (靠右對齊) */
+        /* 底部品牌與版權區域 */
         .footer-area { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
         .copyright-text { font-size: 0.65rem; color: #D02090; text-align: left; opacity: 0.8; line-height: 1.4; flex: 1; }
         .footer-logo { width: 60px; height: auto; margin-left: 10px; }
@@ -53,9 +54,9 @@
     </div>
 
     <div class="vip-card">
-        <div style="font-size:1rem; font-weight:bold; margin-bottom:5px;">🎻 羅常秦老師⎜音感訓練大師</div>
-        <div style="font-size:0.85rem;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
-        <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #D02090; margin:10px 0;">
+        <div class="main-title">羅常秦老師｜音感訓練大師</div>
+        <div style="font-size:0.9rem;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
+        <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #D02090; margin:12px 0;">
             <div>🔥 目前連擊：<span id="combo-now">0</span></div>
             <div>🏆 最高紀錄：<span id="combo-max">0</span></div>
         </div>
@@ -92,6 +93,7 @@
     </div>
 
     <script>
+        // Firebase 邏輯核心，保持穩定
         const firebaseConfig = {
           apiKey: "AIzaSyCKiDsQMsk6WkZASHAt9lmj-vZ6UmwO1SQ",
           authDomain: "erhu-leaderboard.firebaseapp.com",
