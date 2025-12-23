@@ -10,82 +10,65 @@
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: #FFF5F7; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; min-height: 100vh; }
         
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 300px; }
+        /* 修正登入彈窗 */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         
+        /* 膠囊開關樣式 */
         .vip-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
+        .switch-container { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 10px; cursor: pointer; }
+        .switch-box { position: relative; width: 55px; height: 28px; background-color: #ccc; border-radius: 15px; transition: 0.3s; }
+        .switch-ball { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: white; border-radius: 50%; transition: 0.3s; }
         
-        /* 核心修復：還原截圖中的膠囊滑動開關 */
-        .switch-container {
-            display: flex; align-items: center; justify-content: center;
-            gap: 12px; margin-top: 10px; font-size: 0.9rem; font-weight: bold; color: #666;
-            cursor: pointer;
-        }
-
-        .switch-box {
-            position: relative; width: 60px; height: 30px;
-            background-color: #FFB6C1; border-radius: 15px;
-            transition: 0.3s;
-        }
-
-        .switch-ball {
-            position: absolute; top: 3px; left: 3px;
-            width: 24px; height: 24px; background: white;
-            border-radius: 50%; transition: 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        /* 當切換到練習模式時 (Active) */
-        .active .switch-box { background-color: #D02090; }
-        .active .switch-ball { left: 33px; }
-        .active .mode-label-practice { color: #D02090; }
-        .active .mode-label-challenge { color: #ccc; }
-
-        /* 二胡指板間距 */
-        .erhu-container { position: relative; width: 200px; display: flex; flex-direction: column; align-items: center; margin: 15px 0; }
-        #erhu-neck { position: relative; width: 130px; height: 420px; background: #3d2b1f; border-radius: 5px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; }
-        .fret { position: absolute; width: 44px; height: 36px; background: white; border: 2px solid #FFB6C1; border-radius: 18px; left: -21px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; cursor: pointer; }
-        .pos-0 { top: 32px; } .pos-1 { top: 125px; } .pos-2 { top: 218px; } .pos-3 { top: 253px; }
-
-        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 240px; cursor: pointer; margin-top: 15px; }
-        #btn-game-start:disabled { background: #ccc; opacity: 0.6; }
-        #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin: 10px 0; height: 25px; }
+        /* 模式切換效果 */
+        .is-practice .switch-box { background-color: #D02090; }
+        .is-practice .switch-ball { left: 30px; }
+        .is-practice #label-practice { color: #D02090; font-weight: bold; }
+        .is-challenge #label-challenge { color: #D02090; font-weight: bold; }
+        
+        /* 指板與按鈕 */
+        .erhu-container { position: relative; width: 200px; margin: 20px 0; }
+        #erhu-neck { width: 130px; height: 400px; background: #3d2b1f; border-radius: 8px; border: 4px solid #2a1d15; margin: 0 auto; position: relative; display: flex; justify-content: space-around; }
+        .fret { position: absolute; width: 44px; height: 44px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -22px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 50; }
+        .pos-0 { top: 30px; } .pos-1 { top: 120px; } .pos-2 { top: 210px; } .pos-3 { top: 250px; }
+        
+        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 240px; margin-top: 15px; cursor: pointer; }
+        #btn-game-start:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
+        #game-status { color: #D02090; font-weight: bold; margin: 15px 0; min-height: 24px; }
     </style>
 </head>
-<body>
+<body class="is-practice">
+
     <div id="login-overlay">
         <div class="login-box">
-            <h3>創立音樂名冊</h3>
-            <input type="text" id="user-name" placeholder="請輸入您的暱稱" style="width:100%; padding:10px; margin:15px 0; border:2px solid #FFB6C1; border-radius:10px; text-align:center;">
-            <button style="background:#D02090; color:white; border:none; padding:10px 30px; border-radius:20px;" onclick="saveUser()">開始挑戰</button>
+            <h3 style="margin-top:0;">創立音樂名冊</h3>
+            <p style="font-size:0.8rem; color:#666;">輸入原暱稱可同步舊紀錄</p>
+            <input type="text" id="user-name" placeholder="請輸入您的暱稱" style="width:100%; padding:12px; margin-bottom:20px; border:2px solid #FFB6C1; border-radius:10px; text-align:center;">
+            <button onclick="saveUser()" style="background:#D02090; color:white; border:none; padding:12px 40px; border-radius:25px; font-weight:bold; width:100%; cursor:pointer;">開始挑戰</button>
         </div>
     </div>
 
     <div class="vip-card">
-        <div style="font-size:0.8rem; color:#666;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
-        <b style="font-size:1.05rem;">🎻 羅常秦老師⎜專業音感教室</b>
-        
-        <div class="switch-container active" id="mode-wrapper" onclick="toggleMode()">
-            <span class="mode-label-challenge">挑戰模式</span>
-            <div class="switch-box">
-                <div class="switch-ball"></div>
-            </div>
-            <span class="mode-label-practice">練習模式</span>
+        <div style="font-size:0.8rem;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
+        <div style="font-size:0.85rem; color:#D02090; margin:5px 0;">🏆 最高紀錄：<span id="combo-max">0</span></div>
+        <div class="switch-container" onclick="toggleMode()">
+            <span id="label-challenge">挑戰模式</span>
+            <div class="switch-box"><div class="switch-ball"></div></div>
+            <span id="label-practice">練習模式</span>
         </div>
     </div>
 
-    <div id="game-status">練習模式：聽真實音色與唱名</div>
+    <div id="game-status">載入中...</div>
 
     <div class="erhu-container">
-        <div style="width:100%; display:flex; justify-content:space-around; font-weight:bold; margin-bottom:5px;"><span>內弦</span><span>外弦</span></div>
         <div id="erhu-neck">
-            <div class="string">
+            <div class="string" style="width:2px; height:100%; background:#888; position:relative;">
                 <div class="fret pos-0" onclick="handleFretClick(1)">1</div>
                 <div class="fret pos-1" onclick="handleFretClick(2)">2</div>
                 <div class="fret pos-2" onclick="handleFretClick(3)">3</div>
                 <div class="fret pos-3" onclick="handleFretClick(4)">4</div>
             </div>
-            <div class="string">
+            <div class="string" style="width:2px; height:100%; background:#888; position:relative;">
                 <div class="fret pos-0" onclick="handleFretClick(5)">5</div>
                 <div class="fret pos-1" onclick="handleFretClick(6)">6</div>
                 <div class="fret pos-2" onclick="handleFretClick(7)">7</div>
@@ -94,54 +77,87 @@
         </div>
     </div>
 
-    <button id="btn-game-start" onclick="nextQuestion()" disabled>🎧 播放題目音</button>
+    <button id="btn-game-start" onclick="nextQuestion()">🎧 播放題目音</button>
 
     <script>
-        // Firebase 設定與初始化 (省略部分以節省空間，請沿用之前的 Config)
-        const firebaseConfig = { /* 您的 API KEY */ };
+        // Firebase 配置
+        const firebaseConfig = {
+          apiKey: "AIzaSyCKiDsQMsk6WkZASHAt9lmj-vZ6UmwO1SQ",
+          authDomain: "erhu-leaderboard.firebaseapp.com",
+          databaseURL: "https://erhu-leaderboard-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "erhu-leaderboard",
+          storageBucket: "erhu-leaderboard.firebasestorage.app",
+          messagingSenderId: "10526902650",
+          appId: "1:10526902650:web:8052eef341e5338d202ec3"
+        };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        let currentUser = localStorage.getItem('erhuUserName') || "";
         let isPracticeMode = true;
         let currentNote = 0;
+        let maxCombo = 0;
+
+        window.onload = function() {
+            if(currentUser) {
+                document.getElementById('login-overlay').style.display = 'none';
+                loadUserData(currentUser);
+            }
+            updateModeUI();
+        };
+
+        function saveUser() {
+            const name = document.getElementById('user-name').value.trim();
+            if(!name) return alert("請輸入暱稱");
+            
+            currentUser = name;
+            localStorage.setItem('erhuUserName', name);
+            document.getElementById('login-overlay').style.display = 'none';
+            loadUserData(name);
+        }
+
+        // 核心修正：從資料庫撈取舊紀錄
+        function loadUserData(name) {
+            document.getElementById('display-name').innerText = name;
+            db.ref('leaderboard/' + name).once('value', (snapshot) => {
+                if(snapshot.exists()) {
+                    maxCombo = snapshot.val();
+                    document.getElementById('combo-max').innerText = maxCombo;
+                }
+            });
+        }
 
         function toggleMode() {
-            const wrapper = document.getElementById('mode-wrapper');
             isPracticeMode = !isPracticeMode;
-            
-            if (isPracticeMode) {
-                wrapper.classList.add('active');
-                document.getElementById('game-status').innerText = "練習模式：聽真實音色與唱名";
-                document.getElementById('btn-game-start').disabled = true;
-            } else {
-                wrapper.classList.remove('active');
-                document.getElementById('game-status').innerText = "挑戰模式：請聽音辨位";
-                document.getElementById('btn-game-start').disabled = false;
-            }
-            currentNote = 0;
+            updateModeUI();
+        }
+
+        function updateModeUI() {
+            document.body.className = isPracticeMode ? "is-practice" : "is-challenge";
+            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實音色與唱名" : "挑戰模式：請聽音辨位";
+            document.getElementById('btn-game-start').disabled = isPracticeMode;
         }
 
         function handleFretClick(num) {
-            playErhuFile(num);
+            new Audio((num === 8) ? 'd_high1.mp3' : `d${num}.mp3`).play().catch(e => {});
             if (isPracticeMode) {
-                setTimeout(() => playVoiceName(num), 400);
+                setTimeout(() => new Audio(`v${num}.mp3`).play(), 400);
             } else {
-                // 挑戰模式邏輯... (與之前相同)
+                if (currentNote === 0) return;
+                if (num === currentNote) {
+                    new Audio('win1.mp3').play();
+                    document.getElementById('game-status').innerText = "✨ 正確！";
+                    currentNote = 0;
+                } else {
+                    new Audio('lose.mp3').play();
+                    document.getElementById('game-status').innerText = "❌ 斷掉了！請重聽";
+                }
             }
-        }
-
-        function playErhuFile(num) {
-            let fileName = (num === 8) ? 'd_high1.mp3' : `d${num}.mp3`;
-            new Audio(fileName).play().catch(e => {});
-        }
-
-        function playVoiceName(num) {
-            new Audio(`v${num}.mp3`).play().catch(e => {});
         }
 
         function nextQuestion() {
             currentNote = Math.floor(Math.random() * 8) + 1;
-            playErhuFile(currentNote);
+            new Audio((currentNote === 8) ? 'd_high1.mp3' : `d${currentNote}.mp3`).play();
             document.getElementById('game-status').innerText = "請聽音辨位...";
         }
     </script>
