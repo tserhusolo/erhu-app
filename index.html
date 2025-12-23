@@ -10,31 +10,47 @@
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: #FFF5F7; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; min-height: 100vh; }
         
-        /* 修正登入彈窗 */
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        /* 登入視窗 */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
         
-        /* 膠囊開關樣式 */
         .vip-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
-        .switch-container { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 10px; cursor: pointer; }
-        .switch-box { position: relative; width: 55px; height: 28px; background-color: #ccc; border-radius: 15px; transition: 0.3s; }
-        .switch-ball { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: white; border-radius: 50%; transition: 0.3s; }
         
-        /* 模式切換效果 */
+        /* 膠囊開關 */
+        .switch-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; cursor: pointer; }
+        .switch-box { position: relative; width: 50px; height: 26px; background-color: #ccc; border-radius: 13px; transition: 0.3s; }
+        .switch-ball { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: 0.3s; }
         .is-practice .switch-box { background-color: #D02090; }
-        .is-practice .switch-ball { left: 30px; }
+        .is-practice .switch-ball { left: 27px; }
         .is-practice #label-practice { color: #D02090; font-weight: bold; }
         .is-challenge #label-challenge { color: #D02090; font-weight: bold; }
+
+        /* 指板區（核心修正：加入千金線） */
+        .erhu-container { position: relative; width: 220px; display: flex; flex-direction: column; align-items: center; margin: 15px 0; }
+        #erhu-neck { position: relative; width: 130px; height: 400px; background: #3d2b1f; border-radius: 10px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; overflow: visible; }
         
-        /* 指板與按鈕 */
-        .erhu-container { position: relative; width: 200px; margin: 20px 0; }
-        #erhu-neck { width: 130px; height: 400px; background: #3d2b1f; border-radius: 8px; border: 4px solid #2a1d15; margin: 0 auto; position: relative; display: flex; justify-content: space-around; }
-        .fret { position: absolute; width: 44px; height: 44px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -22px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 50; }
-        .pos-0 { top: 30px; } .pos-1 { top: 120px; } .pos-2 { top: 210px; } .pos-3 { top: 250px; }
-        
-        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 240px; margin-top: 15px; cursor: pointer; }
-        #btn-game-start:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
-        #game-status { color: #D02090; font-weight: bold; margin: 15px 0; min-height: 24px; }
+        /* 黃色千金線：置底並穿過 1 與 5 */
+        .qianjin-line {
+            position: absolute; top: 48px; left: 0; width: 100%; height: 6px;
+            background: #FFD700; box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            z-index: 1; /* 在琴弦與指板中間 */
+        }
+
+        .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #aaa, #fff, #aaa); z-index: 2; }
+        .fret { position: absolute; width: 44px; height: 44px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -21px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; cursor: pointer; font-size: 1.1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+        /* 專業指距：3-4 與 7-i 為半音靠近 */
+        .pos-0 { top: 30px; }   /* 1 & 5 (千金位置) */
+        .pos-1 { top: 120px; }  /* 2 & 6 */
+        .pos-2 { top: 210px; }  /* 3 & 7 */
+        .pos-3 { top: 250px; }  /* 4 & i (半音) */
+
+        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 220px; margin: 10px 0; cursor: pointer; box-shadow: 0 4px 0 #8B1462; }
+        #btn-game-start:disabled { background: #eee; color: #aaa; box-shadow: none; cursor: not-allowed; }
+        #game-status { color: #D02090; font-weight: bold; margin: 10px 0; height: 22px; text-align: center; }
+
+        .leaderboard-box { background: white; border: 2px solid #FFD700; border-radius: 15px; padding: 15px; width: 100%; max-width: 340px; margin-top: 15px; }
+        .rank-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
     </style>
 </head>
 <body class="is-practice">
@@ -42,15 +58,15 @@
     <div id="login-overlay">
         <div class="login-box">
             <h3 style="margin-top:0;">創立音樂名冊</h3>
-            <p style="font-size:0.8rem; color:#666;">輸入原暱稱可同步舊紀錄</p>
+            <p style="font-size:0.8rem; color:#666;">輸入原暱稱同步 51 分舊紀錄</p>
             <input type="text" id="user-name" placeholder="請輸入您的暱稱" style="width:100%; padding:12px; margin-bottom:20px; border:2px solid #FFB6C1; border-radius:10px; text-align:center;">
-            <button onclick="saveUser()" style="background:#D02090; color:white; border:none; padding:12px 40px; border-radius:25px; font-weight:bold; width:100%; cursor:pointer;">開始挑戰</button>
+            <button onclick="saveUser()" style="background:#D02090; color:white; border:none; padding:12px 40px; border-radius:25px; font-weight:bold; width:100%;">開始挑戰</button>
         </div>
     </div>
 
     <div class="vip-card">
         <div style="font-size:0.8rem;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
-        <div style="font-size:0.85rem; color:#D02090; margin:5px 0;">🏆 最高紀錄：<span id="combo-max">0</span></div>
+        <div style="font-size:0.85rem; color:#D02090;">🏆 最高紀錄：<span id="combo-max">0</span></div>
         <div class="switch-container" onclick="toggleMode()">
             <span id="label-challenge">挑戰模式</span>
             <div class="switch-box"><div class="switch-ball"></div></div>
@@ -61,14 +77,16 @@
     <div id="game-status">載入中...</div>
 
     <div class="erhu-container">
+        <div style="width:100%; display:flex; justify-content:space-around; font-weight:bold; margin-bottom:8px; font-size:1.1rem; color:#3d2b1f;"><span>內弦</span><span>外弦</span></div>
         <div id="erhu-neck">
-            <div class="string" style="width:2px; height:100%; background:#888; position:relative;">
+            <div class="qianjin-line"></div>
+            <div class="string">
                 <div class="fret pos-0" onclick="handleFretClick(1)">1</div>
                 <div class="fret pos-1" onclick="handleFretClick(2)">2</div>
                 <div class="fret pos-2" onclick="handleFretClick(3)">3</div>
                 <div class="fret pos-3" onclick="handleFretClick(4)">4</div>
             </div>
-            <div class="string" style="width:2px; height:100%; background:#888; position:relative;">
+            <div class="string">
                 <div class="fret pos-0" onclick="handleFretClick(5)">5</div>
                 <div class="fret pos-1" onclick="handleFretClick(6)">6</div>
                 <div class="fret pos-2" onclick="handleFretClick(7)">7</div>
@@ -79,8 +97,12 @@
 
     <button id="btn-game-start" onclick="nextQuestion()">🎧 播放題目音</button>
 
+    <div class="leaderboard-box">
+        <div style="text-align:center; font-weight:bold; margin-bottom:10px;">🏆 全球音感高手榜 (TOP 30)</div>
+        <div id="leaderboard-list">連線中...</div>
+    </div>
+
     <script>
-        // Firebase 配置
         const firebaseConfig = {
           apiKey: "AIzaSyCKiDsQMsk6WkZASHAt9lmj-vZ6UmwO1SQ",
           authDomain: "erhu-leaderboard.firebaseapp.com",
@@ -96,34 +118,40 @@
         let currentUser = localStorage.getItem('erhuUserName') || "";
         let isPracticeMode = true;
         let currentNote = 0;
-        let maxCombo = 0;
 
         window.onload = function() {
             if(currentUser) {
                 document.getElementById('login-overlay').style.display = 'none';
                 loadUserData(currentUser);
             }
+            updateLeaderboard();
             updateModeUI();
         };
 
         function saveUser() {
             const name = document.getElementById('user-name').value.trim();
-            if(!name) return alert("請輸入暱稱");
-            
+            if(!name) return;
             currentUser = name;
             localStorage.setItem('erhuUserName', name);
             document.getElementById('login-overlay').style.display = 'none';
             loadUserData(name);
         }
 
-        // 核心修正：從資料庫撈取舊紀錄
         function loadUserData(name) {
             document.getElementById('display-name').innerText = name;
-            db.ref('leaderboard/' + name).once('value', (snapshot) => {
-                if(snapshot.exists()) {
-                    maxCombo = snapshot.val();
-                    document.getElementById('combo-max').innerText = maxCombo;
-                }
+            db.ref('leaderboard/' + name).once('value', (s) => {
+                if(s.exists()) document.getElementById('combo-max').innerText = s.val();
+            });
+        }
+
+        function updateLeaderboard() {
+            db.ref('leaderboard').orderByValue().limitToLast(30).on('value', (snapshot) => {
+                const list = document.getElementById('leaderboard-list');
+                let items = [];
+                snapshot.forEach((child) => { items.unshift({ name: child.key, score: child.val() }); });
+                list.innerHTML = items.map((user, i) => `
+                    <div class="rank-item"><span>${i+1}. ${user.name}</span><span>${user.score}</span></div>
+                `).join('');
             });
         }
 
@@ -139,25 +167,18 @@
         }
 
         function handleFretClick(num) {
-            new Audio((num === 8) ? 'd_high1.mp3' : `d${num}.mp3`).play().catch(e => {});
+            new Audio(num === 8 ? 'd_high1.mp3' : `d${num}.mp3`).play();
             if (isPracticeMode) {
                 setTimeout(() => new Audio(`v${num}.mp3`).play(), 400);
-            } else {
-                if (currentNote === 0) return;
-                if (num === currentNote) {
-                    new Audio('win1.mp3').play();
-                    document.getElementById('game-status').innerText = "✨ 正確！";
-                    currentNote = 0;
-                } else {
-                    new Audio('lose.mp3').play();
-                    document.getElementById('game-status').innerText = "❌ 斷掉了！請重聽";
-                }
+            } else if (currentNote === num) {
+                document.getElementById('game-status').innerText = "✨ 正確！";
+                currentNote = 0;
             }
         }
 
         function nextQuestion() {
             currentNote = Math.floor(Math.random() * 8) + 1;
-            new Audio((currentNote === 8) ? 'd_high1.mp3' : `d${currentNote}.mp3`).play();
+            new Audio(currentNote === 8 ? 'd_high1.mp3' : `d${currentNote}.mp3`).play();
             document.getElementById('game-status').innerText = "請聽音辨位...";
         }
     </script>
