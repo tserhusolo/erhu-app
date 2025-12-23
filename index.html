@@ -9,27 +9,23 @@
     <style>
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: #FFF5F7; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; min-height: 100vh; }
-        
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; }
         .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 300px; }
-        .login-box input { width: 100%; padding: 10px; margin: 15px 0; border: 2px solid #FFB6C1; border-radius: 10px; font-size: 1rem; text-align: center; }
+        .vip-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
         
-        .vip-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 10px; border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
-        
-        /* 二胡指板核心結構 */
-        .erhu-container { position: relative; width: 180px; display: flex; flex-direction: column; align-items: center; margin: 10px 0; }
-        .string-labels { width: 100%; display: flex; justify-content: space-around; font-weight: bold; color: #333; margin-bottom: 5px; font-size: 1.1rem; }
+        .erhu-container { position: relative; width: 200px; display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
+        .string-labels { width: 100%; display: flex; justify-content: space-around; font-weight: bold; color: #333; margin-bottom: 8px; font-size: 1.2rem; }
         
         #erhu-neck { 
-            position: relative; width: 130px; height: 380px; background: #3d2b1f; 
+            position: relative; width: 130px; height: 420px; background: #3d2b1f; 
             border-radius: 5px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; 
         }
 
-        /* 千金：置底處理 */
+        /* 專業千金：置底並精準對位 */
         .qianjin-line {
-            position: absolute; top: 46px; left: 0; width: 100%; height: 6px;
+            position: absolute; top: 48px; left: 0; width: 100%; height: 6px;
             background: #FFD700; box-shadow: 0 1px 3px rgba(0,0,0,0.5);
-            z-index: 1; /* 設為底層 */
+            z-index: 1; 
         }
 
         .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #aaa, #fff, #aaa); z-index: 2; }
@@ -38,59 +34,45 @@
             position: absolute; width: 44px; height: 36px; background: rgba(255, 255, 255, 0.95); 
             border: 2px solid #FFB6C1; border-radius: 18px; left: -21px; 
             display: flex; align-items: center; justify-content: center; font-weight: bold; 
-            z-index: 10; /* 音階設為高層，遮住千金 */
-            color: #333; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 10; color: #333; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             transition: transform 0.1s;
         }
-        .fret:active { transform: scale(0.9); background: #FFB6C1; }
-        .pos-0 { top: 30px; } .pos-1 { top: 110px; } .pos-2 { top: 190px; } .pos-3 { top: 270px; }
 
-        /* 按鈕與狀態樣式 */
+        /* 【精準音程校正：3-4 與 7-i 靠近】 */
+        .pos-0 { top: 32px; }   /* 1 & 5 (與千金對齊) */
+        .pos-1 { top: 125px; }  /* 2 & 6 (大二度) */
+        .pos-2 { top: 218px; }  /* 3 & 7 (大二度) */
+        .pos-3 { top: 253px; }  /* 4 & i (半音靠近：距離從 93 縮短至 35) */
+
         #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 240px; cursor: pointer; font-size: 1.1rem; margin-top: 15px; box-shadow: 0 4px 0 #8B1462; }
-        #btn-game-start:active { transform: translateY(2px); box-shadow: none; }
-        #btn-game-start:disabled { background: #ccc; box-shadow: none; }
-        #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin: 10px 0; height: 25px; }
-
-        /* 排行榜 */
+        #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin: 10px 0; height: 25px; text-align: center; }
         .leaderboard { width: 100%; max-width: 340px; background: white; border-radius: 20px; padding: 15px; border: 2px solid #FFD700; margin-top: 15px; }
-        .score-container { max-height: 200px; overflow-y: auto; }
-        .score-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
-        
-        /* 模式切換按鈕 */
-        .mode-switch { background: #FDF2F4; padding: 8px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.85rem; margin-top: 5px; }
-        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #D02090; }
-        input:checked + .slider:before { transform: translateX(22px); }
+        .score-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; }
     </style>
 </head>
 <body>
     <div id="login-overlay">
         <div class="login-box">
             <h3>創立音樂名冊</h3>
-            <p>請輸入您的暱稱以進入全球排行榜</p>
-            <input type="text" id="user-name" placeholder="例如：二胡小天才">
-            <button style="background:#D02090; color:white; border:none; padding:10px 30px; border-radius:20px;" onclick="saveUser()">進入競技場</button>
+            <p>輸入暱稱以記錄您的音感成就</p>
+            <input type="text" id="user-name" placeholder="例如：首席二胡手" style="width:100%; padding:10px; margin:15px 0; border:2px solid #FFB6C1; border-radius:10px; text-align:center;">
+            <button style="background:#D02090; color:white; border:none; padding:10px 30px; border-radius:20px; cursor:pointer;" onclick="saveUser()">開始挑戰</button>
         </div>
     </div>
 
     <div class="vip-card">
         <div style="font-size:0.9rem; color:#666;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
-        <b>🎻 羅常秦老師⎜音感訓練大師</b>
-        <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #D02090; margin-top:8px;">
+        <b>🎻 羅常秦老師⎜專業音感教室</b>
+        <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #D02090; margin:10px 0;">
             <div>🔥 目前連擊：<span id="combo-now">0</span></div>
             <div>🏆 最高紀錄：<span id="combo-max">0</span></div>
         </div>
-        <div class="mode-switch">
-            <span>挑戰模式</span>
-            <label class="switch"><input type="checkbox" id="mode-toggle" onchange="toggleMode()" checked><span class="slider"></span></label>
-            <span>練習模式</span>
+        <div style="background:#FDF2F4; padding:8px; border-radius:12px; font-size:0.85rem;">
+            模式：<input type="checkbox" id="mode-toggle" onchange="toggleMode()" checked> <label for="mode-toggle">練習(唱名) / 挑戰(聽音)</label>
         </div>
     </div>
 
-    <div id="game-status">連線中...</div>
+    <div id="game-status">系統準備中...</div>
 
     <div class="erhu-container">
         <div class="string-labels"><span>內弦</span><span>外弦</span></div>
@@ -114,11 +96,12 @@
     <button id="btn-game-start" onclick="nextQuestion()">🎧 播放題目音</button>
 
     <div class="leaderboard">
-        <h3 style="margin:0 0 10px 0; font-size:1rem; text-align:center; color:#B8860B;">🏆 全球音感高手榜 (TOP 30)</h3>
-        <div class="score-container" id="score-list"></div>
+        <h3 style="margin:0 0 10px 0; font-size:1rem; text-align:center; color:#B8860B;">🏆 全球音感高手榜 (Top 30)</h3>
+        <div id="score-list"></div>
     </div>
 
     <script>
+        // 確認 Firebase 初始化正確
         const firebaseConfig = {
           apiKey: "AIzaSyCKiDsQMsk6WkZASHAt9lmj-vZ6UmwO1SQ",
           authDomain: "erhu-leaderboard.firebaseapp.com",
@@ -128,7 +111,6 @@
           messagingSenderId: "10526902650",
           appId: "1:10526902650:web:8052eef341e5338d202ec3"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
@@ -151,9 +133,8 @@
         function toggleMode() {
             isPracticeMode = document.getElementById('mode-toggle').checked;
             document.getElementById('btn-game-start').disabled = isPracticeMode;
-            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽音色與唱名" : "挑戰模式：請聽音辨位";
-            comboCount = 0;
-            updateUI(document.getElementById('game-status').innerText);
+            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真音與唱名" : "挑戰模式：請聽音辨位";
+            comboCount = 0; updateUI(document.getElementById('game-status').innerText);
         }
 
         function saveUser() {
@@ -214,7 +195,7 @@
                 } else {
                     comboCount = 0;
                     new Audio('lose.mp3').play().catch(e => {});
-                    updateUI("❌ 斷掉了！");
+                    updateUI("❌ 失敗！重新聽題目");
                 }
             }
         }
@@ -228,7 +209,7 @@
         function nextQuestion() {
             currentNote = Math.floor(Math.random() * 8) + 1;
             playErhuFile(currentNote);
-            document.getElementById('game-status').innerText = "請聽音辨位...";
+            document.getElementById('game-status').innerText = "請按出剛才的音...";
         }
     </script>
 </body>
