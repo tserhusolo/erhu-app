@@ -10,13 +10,10 @@
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: #FFF5F7; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; min-height: 100vh; }
         
-        /* 剴韻坊水墨 Logo 樣式 */
-        .brand-logo { width: 120px; height: auto; margin-top: 10px; margin-bottom: 5px; }
-        
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .login-box { background: white; padding: 30px; border-radius: 25px; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 15px 35px rgba(208,32,144,0.2); }
         
-        /* 移除原有的紅色標籤，保持卡片簡潔 */
+        /* 清爽的卡片，已移除上方所有標籤與 Logo */
         .vip-card { background: white; padding: 20px 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
         
         .switch-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; cursor: pointer; }
@@ -25,25 +22,30 @@
         .is-practice .switch-box { background-color: #D02090; }
         .is-practice .switch-ball { left: 27px; }
 
-        /* 二胡組件與精準千金位置 */
         .erhu-container { position: relative; width: 220px; display: flex; flex-direction: column; align-items: center; margin: 15px 0; }
         #erhu-neck { position: relative; width: 130px; height: 380px; background: #3d2b1f; border-radius: 10px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; }
         .qianjin-line { position: absolute; top: 48px; left: 0; width: 100%; height: 6px; background: #FFD700; box-shadow: 0 1px 3px rgba(0,0,0,0.5); z-index: 1; }
         .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #aaa, #fff, #aaa); z-index: 2; }
-        .fret { position: absolute; width: 44px; height: 44px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -21px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .fret { position: absolute; width: 44px; height: 44px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -21px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: 0.1s; }
+        .fret:active { background: #FFB6C1; color: white; }
         .pos-0 { top: 30px; } .pos-1 { top: 110px; } .pos-2 { top: 200px; } .pos-3 { top: 240px; }
 
         .leaderboard-box { background: white; border: 2px solid #FFD700; border-radius: 15px; padding: 15px; width: 100%; max-width: 340px; margin-top: 15px; }
-        .copyright { font-size: 0.65rem; color: #D02090; text-align: center; margin-top: 15px; border-top: 1px solid #eee; padding-top: 8px; opacity: 0.7; line-height: 1.4; }
-        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 220px; margin: 10px 0; cursor: pointer; box-shadow: 0 4px 0 #8B1462; }
+        
+        /* 底部版權與 Logo 混合排版 (靠右對齊) */
+        .footer-area { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+        .copyright-text { font-size: 0.65rem; color: #D02090; text-align: left; opacity: 0.8; line-height: 1.4; flex: 1; }
+        .footer-logo { width: 60px; height: auto; margin-left: 10px; }
+        
+        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 220px; margin: 10px 0; cursor: pointer; box-shadow: 0 4px 0 #8B1462; transition: 0.1s; }
+        #btn-game-start:active { transform: translateY(4px); box-shadow: none; }
     </style>
 </head>
 <body class="is-practice">
 
     <div id="login-overlay">
         <div class="login-box">
-            <img src="Kai-Yuen-Fan-Logo.jpg" class="brand-logo" alt="剴韻坊">
-            <h2 style="color:#D02090; margin-top:5px;">音感訓練大師</h2>
+            <h2 style="color:#D02090; margin-top:0;">音感訓練大師</h2>
             <p style="font-size:0.8rem; color:#666;">輸入暱稱開始挑戰</p>
             <input type="text" id="user-name" placeholder="請輸入您的暱稱" style="width:100%; padding:15px; margin-bottom:20px; border:2px solid #FFB6C1; border-radius:12px; text-align:center;">
             <button onclick="saveUser()" style="background:#D02090; color:white; border:none; padding:15px 40px; border-radius:30px; font-weight:bold; width:100%; cursor:pointer;">開始挑戰</button>
@@ -51,10 +53,9 @@
     </div>
 
     <div class="vip-card">
-        <img src="Kai-Yuen-Fan-Logo.jpg" style="width:70px; height:auto;" alt="剴韻坊">
-        <div style="font-size:0.95rem; font-weight:bold; margin: 8px 0;">🎻 羅常秦老師⎜音感訓練大師</div>
+        <div style="font-size:1rem; font-weight:bold; margin-bottom:5px;">🎻 羅常秦老師⎜音感訓練大師</div>
         <div style="font-size:0.85rem;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
-        <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #D02090; margin:8px 0;">
+        <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #D02090; margin:10px 0;">
             <div>🔥 目前連擊：<span id="combo-now">0</span></div>
             <div>🏆 最高紀錄：<span id="combo-max">0</span></div>
         </div>
@@ -70,18 +71,8 @@
     <div class="erhu-container">
         <div id="erhu-neck">
             <div class="qianjin-line"></div>
-            <div class="string">
-                <div class="fret pos-0" onclick="hClick(1)">1</div>
-                <div class="fret pos-1" onclick="hClick(2)">2</div>
-                <div class="fret pos-2" onclick="hClick(3)">3</div>
-                <div class="fret pos-3" onclick="hClick(4)">4</div>
-            </div>
-            <div class="string">
-                <div class="fret pos-0" onclick="hClick(5)">5</div>
-                <div class="fret pos-1" onclick="hClick(6)">6</div>
-                <div class="fret pos-2" onclick="hClick(7)">7</div>
-                <div class="fret pos-3" onclick="hClick(8)">i</div>
-            </div>
+            <div class="string"><div class="fret pos-0" onclick="hClick(1)">1</div><div class="fret pos-1" onclick="hClick(2)">2</div><div class="fret pos-2" onclick="hClick(3)">3</div><div class="fret pos-3" onclick="hClick(4)">4</div></div>
+            <div class="string"><div class="fret pos-0" onclick="hClick(5)">5</div><div class="fret pos-1" onclick="hClick(6)">6</div><div class="fret pos-2" onclick="hClick(7)">7</div><div class="fret pos-3" onclick="hClick(8)">i</div></div>
         </div>
     </div>
 
@@ -90,14 +81,17 @@
     <div class="leaderboard-box">
         <div style="text-align:center; font-weight:bold; margin-bottom:10px;">🏆 全球音感高手榜 (TOP 30)</div>
         <div id="leaderboard-list">連線中...</div>
-        <div class="copyright">
-            © 2025 剴韻坊版權所有<br>
-            系統受數位著作權保護・盜用必究
+        
+        <div class="footer-area">
+            <div class="copyright-text">
+                © 2025 剴韻坊版權所有<br>
+                系統受數位著作權保護・盜用必究
+            </div>
+            <img src="logo.jpg" class="footer-logo" alt="剴韻坊">
         </div>
     </div>
 
     <script>
-        // Firebase 核心邏輯深度核對，保持功能完整
         const firebaseConfig = {
           apiKey: "AIzaSyCKiDsQMsk6WkZASHAt9lmj-vZ6UmwO1SQ",
           authDomain: "erhu-leaderboard.firebaseapp.com",
