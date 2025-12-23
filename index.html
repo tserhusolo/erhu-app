@@ -9,29 +9,39 @@
     <style>
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: #FFF5F7; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; min-height: 100vh; }
+        
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; display: flex; align-items: center; justify-content: center; }
         .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 300px; }
         
-        /* 模式切換區：完全還原截圖樣式 */
+        /* 核心卡片區域 */
         .vip-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
-        .mode-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 10px; padding: 8px; background: #FDF2F4; border-radius: 12px; font-size: 0.9rem; }
         
-        /* 指板與音程：保留專業半音距離 */
-        .erhu-container { position: relative; width: 200px; display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
+        /* 模式選擇區：強制還原截圖單行樣式 */
+        .mode-selection-area { 
+            display: flex; align-items: center; justify-content: center; 
+            background: #FDF2F4; border-radius: 12px; padding: 8px 5px; 
+            margin-top: 10px; font-size: 0.85rem; white-space: nowrap;
+        }
+        .mode-selection-area input { margin: 0 5px 0 10px; cursor: pointer; }
+
+        /* 指板樣式 */
+        .erhu-container { position: relative; width: 200px; display: flex; flex-direction: column; align-items: center; margin: 15px 0; }
         #erhu-neck { position: relative; width: 130px; height: 420px; background: #3d2b1f; border-radius: 5px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; }
         .qianjin-line { position: absolute; top: 48px; left: 0; width: 100%; height: 6px; background: #FFD700; z-index: 1; }
         .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #aaa, #fff, #aaa); z-index: 2; }
-        .fret { position: absolute; width: 44px; height: 36px; background: white; border: 2px solid #FFB6C1; border-radius: 18px; left: -21px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; cursor: pointer; }
-
-        /* 半音校正位置 */
+        
+        /* 音位球 */
+        .fret { position: absolute; width: 44px; height: 36px; background: white; border: 2px solid #FFB6C1; border-radius: 18px; left: -21px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; cursor: pointer; color: #333; }
         .pos-0 { top: 32px; }   /* 1 & 5 */
         .pos-1 { top: 125px; }  /* 2 & 6 */
         .pos-2 { top: 218px; }  /* 3 & 7 */
         .pos-3 { top: 253px; }  /* 4 & i (半音靠近) */
 
+        /* 底部按鈕與榜單 */
         #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 240px; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 0 #8B1462; }
         #btn-game-start:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
-        #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin: 10px 0; height: 25px; }
+        #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin: 10px 0; height: 25px; text-align: center; }
+        
         .leaderboard { width: 100%; max-width: 340px; background: white; border-radius: 20px; padding: 15px; border: 2px solid #FFD700; margin-top: 15px; }
         .score-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
     </style>
@@ -40,27 +50,27 @@
     <div id="login-overlay">
         <div class="login-box">
             <h3>創立音樂名冊</h3>
-            <input type="text" id="user-name" placeholder="例如：二胡小將" style="width:100%; padding:10px; margin:15px 0; border:2px solid #FFB6C1; border-radius:10px; text-align:center;">
+            <input type="text" id="user-name" placeholder="請輸入您的暱稱" style="width:100%; padding:10px; margin:15px 0; border:2px solid #FFB6C1; border-radius:10px; text-align:center;">
             <button style="background:#D02090; color:white; border:none; padding:10px 30px; border-radius:20px;" onclick="saveUser()">開始挑戰</button>
         </div>
     </div>
 
     <div class="vip-card">
         <div style="font-size:0.8rem; color:#666;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
-        <b style="font-size:1.1rem;">🎻 羅常秦老師⎜專業音感教室</b>
+        <b style="font-size:1.05rem;">🎻 羅常秦老師⎜專業音感教室</b>
         <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #D02090; margin:10px 0;">
             <div>🔥 目前連擊：<span id="combo-now">0</span></div>
             <div>🏆 最高紀錄：<span id="combo-max">0</span></div>
         </div>
-        <div class="mode-row">
-            模式：<input type="checkbox" id="mode-toggle" onchange="toggleMode()" checked> <label for="mode-toggle">練習模式(開啟) / 挑戰模式(關閉)</label>
+        <div class="mode-selection-area">
+            模式：<input type="checkbox" id="mode-toggle" onchange="toggleMode()" checked> 練習(唱名) / 挑戰(聽音)
         </div>
     </div>
 
     <div id="game-status">載入中...</div>
 
     <div class="erhu-container">
-        <div style="width:100%; display:flex; justify-content:space-around; font-weight:bold; margin-bottom:5px;"><span>內弦</span><span>外弦</span></div>
+        <div style="width:100%; display:flex; justify-content:space-around; font-weight:bold; margin-bottom:5px; font-size: 1.1rem;"><span>內弦</span><span>外弦</span></div>
         <div id="erhu-neck">
             <div class="qianjin-line"></div>
             <div class="string">
@@ -117,8 +127,10 @@
         function toggleMode() {
             isPracticeMode = document.getElementById('mode-toggle').checked;
             document.getElementById('btn-game-start').disabled = isPracticeMode;
+            // 完全連動截圖提示語
             document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實音色與唱名" : "挑戰模式：請聽音辨位";
-            comboCount = 0; updateUI(document.getElementById('game-status').innerText);
+            comboCount = 0; 
+            updateUI(document.getElementById('game-status').innerText);
         }
 
         function saveUser() {
