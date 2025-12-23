@@ -20,11 +20,11 @@
         .is-practice #label-practice { color: #D02090; font-weight: bold; }
         .is-challenge #label-challenge { color: #D02090; font-weight: bold; }
         .erhu-container { position: relative; width: 220px; display: flex; flex-direction: column; align-items: center; margin: 15px 0; }
-        #erhu-neck { position: relative; width: 130px; height: 400px; background: #3d2b1f; border-radius: 10px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; }
+        #erhu-neck { position: relative; width: 130px; height: 380px; background: #3d2b1f; border-radius: 10px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; }
         .qianjin-line { position: absolute; top: 48px; left: 0; width: 100%; height: 6px; background: #FFD700; box-shadow: 0 1px 3px rgba(0,0,0,0.5); z-index: 1; }
         .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #aaa, #fff, #aaa); z-index: 2; }
-        .fret { position: absolute; width: 44px; height: 44px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -21px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .pos-0 { top: 30px; } .pos-1 { top: 120px; } .pos-2 { top: 210px; } .pos-3 { top: 250px; }
+        .fret { position: absolute; width: 42px; height: 42px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -21px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .pos-0 { top: 30px; } .pos-1 { top: 110px; } .pos-2 { top: 200px; } .pos-3 { top: 240px; }
         #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 220px; margin: 10px 0; cursor: pointer; box-shadow: 0 4px 0 #8B1462; }
         #btn-game-start:disabled { background: #eee; color: #aaa; box-shadow: none; cursor: not-allowed; }
         #game-status { color: #D02090; font-weight: bold; margin: 10px 0; height: 22px; text-align: center; }
@@ -44,7 +44,10 @@
 
     <div class="vip-card">
         <div style="font-size:0.8rem;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
-        <div style="font-size:0.85rem; color:#D02090;">🏆 最高紀錄：<span id="combo-max">0</span></div>
+        <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #D02090; margin:5px 0;">
+            <div>🔥 目前連擊：<span id="combo-now">0</span></div>
+            <div>🏆 最高紀錄：<span id="combo-max">0</span></div>
+        </div>
         <div class="switch-container" onclick="toggleMode()">
             <span id="label-challenge">挑戰模式</span>
             <div class="switch-box"><div class="switch-ball"></div></div>
@@ -57,18 +60,8 @@
     <div class="erhu-container">
         <div id="erhu-neck">
             <div class="qianjin-line"></div>
-            <div class="string">
-                <div class="fret pos-0" onclick="handleFretClick(1)">1</div>
-                <div class="fret pos-1" onclick="handleFretClick(2)">2</div>
-                <div class="fret pos-2" onclick="handleFretClick(3)">3</div>
-                <div class="fret pos-3" onclick="handleFretClick(4)">4</div>
-            </div>
-            <div class="string">
-                <div class="fret pos-0" onclick="handleFretClick(5)">5</div>
-                <div class="fret pos-1" onclick="handleFretClick(6)">6</div>
-                <div class="fret pos-2" onclick="handleFretClick(7)">7</div>
-                <div class="fret pos-3" onclick="handleFretClick(8)">i</div>
-            </div>
+            <div class="string"><div class="fret pos-0" onclick="handleFretClick(1)">1</div><div class="fret pos-1" onclick="handleFretClick(2)">2</div><div class="fret pos-2" onclick="handleFretClick(3)">3</div><div class="fret pos-3" onclick="handleFretClick(4)">4</div></div>
+            <div class="string"><div class="fret pos-0" onclick="handleFretClick(5)">5</div><div class="fret pos-1" onclick="handleFretClick(6)">6</div><div class="fret pos-2" onclick="handleFretClick(7)">7</div><div class="fret pos-3" onclick="handleFretClick(8)">i</div></div>
         </div>
     </div>
 
@@ -95,6 +88,8 @@
         let currentUser = localStorage.getItem('erhuUserName') || "";
         let isPracticeMode = true;
         let currentNote = 0;
+        let comboCount = 0;
+        let maxCombo = 0;
 
         window.onload = function() {
             if(currentUser) {
@@ -117,7 +112,10 @@
         function loadUserData(name) {
             document.getElementById('display-name').innerText = name;
             db.ref('leaderboard/' + name).once('value', (s) => {
-                if(s.exists()) document.getElementById('combo-max').innerText = s.val();
+                if(s.exists()) {
+                    maxCombo = s.val();
+                    document.getElementById('combo-max').innerText = maxCombo;
+                }
             });
         }
 
@@ -126,14 +124,14 @@
                 const list = document.getElementById('leaderboard-list');
                 let items = [];
                 snapshot.forEach((child) => { items.unshift({ name: child.key, score: child.val() }); });
-                list.innerHTML = items.map((user, i) => `
-                    <div class="rank-item"><span>${i+1}. ${user.name}</span><span>${user.score}</span></div>
-                `).join('');
+                list.innerHTML = items.map((user, i) => `<div class="rank-item"><span>${i+1}. ${user.name}</span><span>${user.score}</span></div>`).join('');
             });
         }
 
         function toggleMode() {
             isPracticeMode = !isPracticeMode;
+            comboCount = 0;
+            document.getElementById('combo-now').innerText = "0";
             updateModeUI();
         }
 
@@ -143,28 +141,28 @@
             document.getElementById('btn-game-start').disabled = isPracticeMode;
         }
 
-        // 核心修復：音效邏輯
-        function playFeedbackSound(type) {
-            let audio = new Audio(type === 'win' ? 'win1.mp3' : 'lose.mp3');
-            audio.play().catch(e => console.log("音效加載中"));
-        }
-
         function handleFretClick(num) {
-            // 播放二胡音
             new Audio(num === 8 ? 'd_high1.mp3' : `d${num}.mp3`).play();
-            
             if (isPracticeMode) {
                 setTimeout(() => new Audio(`v${num}.mp3`).play(), 400);
             } else {
                 if (currentNote === 0) return;
                 if (num === currentNote) {
-                    playFeedbackSound('win'); // 播對的音效
+                    comboCount++;
+                    new Audio('win1.mp3').play();
                     document.getElementById('game-status').innerText = "✨ 正確！";
+                    if (comboCount > maxCombo) {
+                        maxCombo = comboCount;
+                        db.ref('leaderboard/' + currentUser).set(maxCombo);
+                    }
                     currentNote = 0;
                 } else {
-                    playFeedbackSound('lose'); // 播錯的音效
-                    document.getElementById('game-status').innerText = "❌ 斷掉了！請重聽題目";
+                    comboCount = 0;
+                    new Audio('lose.mp3').play();
+                    document.getElementById('game-status').innerText = "❌ 斷掉了！請重聽";
                 }
+                document.getElementById('combo-now').innerText = comboCount;
+                document.getElementById('combo-max').innerText = maxCombo;
             }
         }
 
