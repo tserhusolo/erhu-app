@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>羅常秦老師⎜音感排行榜</title>
+    <title>羅常秦老師⎜全球音感挑戰賽</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: #FFF5F7; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; min-height: 100vh; }
@@ -33,21 +35,20 @@
         #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 80%; max-width: 280px; cursor: pointer; font-size: 1.1rem; }
         #btn-game-start:disabled { background: #ccc; cursor: not-allowed; }
         #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; height: 25px; text-align: center; }
-        .footer-link { margin-top: 15px; text-decoration: none; color: #D02090; font-size: 0.85rem; border: 1px solid #FFB6C1; padding: 5px 15px; border-radius: 20px; background: white; }
     </style>
 </head>
 <body>
     <div id="login-overlay">
         <div class="login-box">
             <h3>創立音樂名冊</h3>
-            <p>請輸入您的暱稱以進入排行榜</p>
+            <p>請輸入您的暱稱以進入全球排行榜</p>
             <input type="text" id="user-name" placeholder="例如：二胡小天才">
-            <button class="btn-login" onclick="saveUser()">開始挑戰</button>
+            <button class="btn-login" onclick="saveUser()">進入競技場</button>
         </div>
     </div>
 
     <div class="vip-card">
-        <div class="user-info">挑戰者：<b id="display-name">訪客</b></div>
+        <div class="user-info">挑戰者：<b id="display-name">載入中...</b></div>
         <b>🎻 羅常秦老師⎜音感訓練大師</b>
         <div style="display:flex; justify-content: space-around; font-size: 0.9rem; color: #D02090; margin-top:5px;">
             <div>🔥 目前連擊：<span id="combo-now">0</span></div>
@@ -63,7 +64,7 @@
         </div>
     </div>
 
-    <div id="game-status">載入中...</div>
+    <div id="game-status">連線中...</div>
 
     <div id="erhu-neck">
         <div class="string">
@@ -83,13 +84,30 @@
     <button id="btn-game-start" onclick="nextQuestion()">🎧 播放題目音</button>
 
     <div class="leaderboard">
-        <h3>🏆 今日音感高手榜 (前30名)</h3>
-        <div class="score-container" id="score-list"></div>
+        <h3>🏆 全球音感高手榜 (TOP 30)</h3>
+        <div class="score-container" id="score-list">
+            <div style="text-align: center; padding: 20px; color: #999;">正在連線雲端榜單...</div>
+        </div>
     </div>
 
-    <a href="https://www.facebook.com/erhutslo/" target="_blank" class="footer-link">🔗 跨界二胡玩家羅常秦｜粉專</a>
+    <a href="https://www.facebook.com/erhutslo/" target="_blank" style="margin-top: 15px; text-decoration: none; color: #D02090; font-size: 0.85rem; border: 1px solid #FFB6C1; padding: 5px 15px; border-radius: 20px; background: white;">🔗 跨界二胡玩家羅常秦｜粉專</a>
 
     <script>
+        // --- Firebase 配置 ---
+        const firebaseConfig = {
+          apiKey: "AIzaSyCKiDsQMsk6WkZASHAt9lmj-vZ6UmwO1SQ",
+          authDomain: "erhu-leaderboard.firebaseapp.com",
+          databaseURL: "https://erhu-leaderboard-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "erhu-leaderboard",
+          storageBucket: "erhu-leaderboard.firebasestorage.app",
+          messagingSenderId: "10526902650",
+          appId: "1:10526902650:web:8052eef341e5338d202ec3",
+          measurementId: "G-WKVMMFJRX8"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         let currentUser = localStorage.getItem('erhuUserName') || "";
         let comboCount = 0;
         let maxCombo = parseInt(localStorage.getItem('erhuMaxCombo')) || 0;
@@ -102,14 +120,14 @@
                 document.getElementById('display-name').innerText = currentUser;
                 document.getElementById('combo-max').innerText = maxCombo;
             }
-            initLeaderboard();
+            listenLeaderboard(); // 開始監聽雲端排行榜
             toggleMode();
         };
 
         function toggleMode() {
             isPracticeMode = document.getElementById('mode-toggle').checked;
             document.getElementById('btn-game-start').disabled = isPracticeMode;
-            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實音色與唱名" : "挑戰模式：請聽音辨位";
+            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽音色與唱名" : "挑戰模式：請聽音辨位";
             comboCount = 0;
             updateUI(document.getElementById('game-status').innerText);
         }
@@ -121,31 +139,51 @@
                 currentUser = name;
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('display-name').innerText = name;
+                // 初次登入也更新一次分數到雲端
+                updateCloudScore(maxCombo);
             }
         }
 
-        function initLeaderboard() {
-            const list = document.getElementById('score-list');
-            let html = '<div class="score-item"><span class="rank">1</span> 羅常秦老師 <span class="val">99+</span></div>';
-            for (let i = 2; i <= 30; i++) {
-                html += `<div class="score-item"><span class="rank">${i}</span> --- <span class="val">-</span></div>`;
-            }
-            list.innerHTML = html;
+        // 監聽雲端排行榜數據
+        function listenLeaderboard() {
+            db.ref('leaderboard').orderByValue().limitToLast(30).on('value', (snapshot) => {
+                const list = document.getElementById('score-list');
+                let scores = [];
+                snapshot.forEach((child) => {
+                    scores.push({ name: child.key, score: child.val() });
+                });
+                scores.reverse(); // 由高到低排序
+
+                let html = '';
+                scores.forEach((item, index) => {
+                    html += `<div class="score-item"><span class="rank">${index + 1}</span> ${item.name} <span class="val">${item.score}</span></div>`;
+                });
+                // 如果榜單不足 30 人，補上空位
+                for(let i = scores.length + 1; i <= 30; i++) {
+                    html += `<div class="score-item"><span class="rank">${i}</span> --- <span class="val">-</span></div>`;
+                }
+                list.innerHTML = html;
+            });
+        }
+
+        // 更新分數到雲端
+        function updateCloudScore(score) {
+            if (!currentUser) return;
+            db.ref('leaderboard/' + currentUser).set(score);
         }
 
         function playErhuFile(num) {
             let fileName = (num === 8) ? 'd_high1.mp3' : `d${num}.mp3`;
-            new Audio(fileName).play().catch(e => console.log("音檔讀取中"));
+            new Audio(fileName).play().catch(e => {});
         }
 
         function playVoiceName(num) {
-            new Audio(`v${num}.mp3`).play().catch(e => console.log("唱名讀取中"));
+            new Audio(`v${num}.mp3`).play().catch(e => {});
         }
 
-        // 補回勝負音效函式
         function playSoundFile(type) {
             let fileName = (type === 'win') ? `win${Math.floor(Math.random() * 20) + 1}.mp3` : `lose.mp3`;
-            new Audio(fileName).play().catch(e => console.log("效音讀取中"));
+            new Audio(fileName).play().catch(e => {});
         }
 
         function handleFretClick(num) {
@@ -160,13 +198,14 @@
                     if (comboCount > maxCombo) {
                         maxCombo = comboCount;
                         localStorage.setItem('erhuMaxCombo', maxCombo);
+                        updateCloudScore(maxCombo); // 最高紀錄更新時傳送到雲端
                     }
-                    playSoundFile('win'); // 觸發答對音效
+                    playSoundFile('win');
                     updateUI("✨ 正確！");
                     currentNote = 0;
                 } else {
                     comboCount = 0;
-                    playSoundFile('lose'); // 觸發答錯音效
+                    playSoundFile('lose');
                     updateUI("❌ 斷掉了！");
                 }
             }
