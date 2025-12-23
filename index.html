@@ -12,12 +12,13 @@
         #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; display: flex; align-items: center; justify-content: center; }
         .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 300px; }
         .login-box input { width: 100%; padding: 10px; margin: 15px 0; border: 2px solid #FFB6C1; border-radius: 10px; font-size: 1rem; text-align: center; }
+        .btn-login { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; }
         
         .vip-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 10px; border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
         .user-info { font-size: 0.9rem; color: #666; margin-bottom: 5px; }
         .user-info b { color: #D02090; }
 
-        /* 模式切換開關 */
+        /* 模式切換 */
         .mode-switch { background: #FDF2F4; padding: 8px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.85rem; margin-top: 8px; }
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -26,22 +27,22 @@
         input:checked + .slider { background-color: #D02090; }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        /* 排行榜樣式 */
+        /* 排行榜 */
         .leaderboard { width: 100%; max-width: 340px; background: white; border-radius: 20px; padding: 15px; margin-top: 20px; border: 2px solid #FFD700; }
         .leaderboard h3 { margin: 0 0 10px 0; color: #B8860B; font-size: 1.1rem; text-align: center; }
         .score-container { max-height: 250px; overflow-y: auto; }
         .score-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; }
         .rank { font-weight: bold; color: #D02090; width: 35px; }
 
-        /* 指板樣式 */
+        /* 指板 */
         #erhu-neck { position: relative; width: 100px; height: 320px; background: #3d2b1f; border-radius: 10px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; margin: 10px 0; }
         .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #999, #eee, #999); }
         .fret { position: absolute; width: 40px; height: 40px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -19px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 3; color: #333; cursor: pointer; }
         .pos-0 { top: 30px; } .pos-1 { top: 100px; } .pos-2 { top: 180px; } .pos-3 { top: 230px; }
         
-        #btn-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 80%; max-width: 280px; cursor: pointer; }
-        #btn-start:disabled { background: #ccc; cursor: not-allowed; }
-        #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; height: 25px; }
+        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 80%; max-width: 280px; cursor: pointer; font-size: 1.1rem; }
+        #btn-game-start:disabled { background: #ccc; cursor: not-allowed; }
+        #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; height: 25px; text-align: center; }
     </style>
 </head>
 <body>
@@ -51,7 +52,7 @@
             <h3>創立音樂名冊</h3>
             <p>請輸入您的暱稱以進入排行榜</p>
             <input type="text" id="user-name" placeholder="例如：二胡小天才">
-            <button id="btn-start" style="width: 100%;" onclick="saveUser()">開始挑戰</button>
+            <button class="btn-login" onclick="saveUser()">開始挑戰</button>
         </div>
     </div>
 
@@ -74,7 +75,7 @@
         </div>
     </div>
 
-    <div id="game-status">載入中...</div>
+    <div id="game-status">準備好了嗎？</div>
 
     <div id="erhu-neck">
         <div class="string">
@@ -91,12 +92,11 @@
         </div>
     </div>
 
-    <button id="btn-start" onclick="nextQuestion()">🎧 播放題目音</button>
+    <button id="btn-game-start" onclick="nextQuestion()">🎧 播放題目音</button>
 
     <div class="leaderboard">
         <h3>🏆 今日音感高手榜 (前30名)</h3>
-        <div class="score-container" id="score-list">
-            </div>
+        <div class="score-container" id="score-list"></div>
     </div>
 
     <script>
@@ -113,15 +113,14 @@
                 document.getElementById('combo-max').innerText = maxCombo;
             }
             initLeaderboard();
-            toggleMode(); // 初始化模式狀態
+            toggleMode();
         };
 
         function toggleMode() {
             isPracticeMode = document.getElementById('mode-toggle').checked;
-            document.getElementById('btn-start').disabled = isPracticeMode;
+            // 這裡指向正確的遊戲按鈕 ID
+            document.getElementById('btn-game-start').disabled = isPracticeMode;
             document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實音色與唱名" : "挑戰模式：請聽音辨位";
-            
-            // 切換模式重置當前連擊，但不影響最高紀錄
             comboCount = 0;
             updateUI(document.getElementById('game-status').innerText);
         }
@@ -148,23 +147,20 @@
         function playErhuFile(num) {
             let fileName = (num === 8) ? 'd_high1.mp3' : `d${num}.mp3`;
             const audio = new Audio(fileName);
-            audio.play().catch(e => console.log("音檔讀取中"));
+            audio.play().catch(e => console.log("音檔載入中"));
         }
 
         function playVoiceName(num) {
             const audio = new Audio(`v${num}.mp3`);
-            audio.play().catch(e => console.log("唱名音檔讀取中"));
+            audio.play().catch(e => console.log("唱名載入中"));
         }
 
         function handleFretClick(num) {
             playErhuFile(num);
-            
             if (isPracticeMode) {
-                // 練習模式：延遲播放唱名
                 setTimeout(() => playVoiceName(num), 400);
                 document.getElementById('game-status').innerText = `正在練習：唱名 ${num}`;
             } else {
-                // 挑戰模式
                 if (currentNote === 0) return;
                 if (num === currentNote) {
                     comboCount++;
