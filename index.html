@@ -17,22 +17,30 @@
         .user-info { font-size: 0.9rem; color: #666; margin-bottom: 5px; }
         .user-info b { color: #D02090; }
 
-        /* 排行榜樣式 - 擴充至 30 名並增加滾動 */
+        /* 模式切換開關 */
+        .mode-switch { background: #FDF2F4; padding: 8px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.85rem; margin-top: 8px; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #D02090; }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* 排行榜樣式 */
         .leaderboard { width: 100%; max-width: 340px; background: white; border-radius: 20px; padding: 15px; margin-top: 20px; border: 2px solid #FFD700; }
         .leaderboard h3 { margin: 0 0 10px 0; color: #B8860B; font-size: 1.1rem; text-align: center; }
-        .score-container { max-height: 300px; overflow-y: auto; padding-right: 5px; }
+        .score-container { max-height: 250px; overflow-y: auto; }
         .score-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; }
-        .score-item:last-child { border: none; }
         .rank { font-weight: bold; color: #D02090; width: 35px; }
-        .val { font-weight: bold; color: #444; }
 
-        /* 遊戲指板樣式 */
+        /* 指板樣式 */
         #erhu-neck { position: relative; width: 100px; height: 320px; background: #3d2b1f; border-radius: 10px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; margin: 10px 0; }
         .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #999, #eee, #999); }
         .fret { position: absolute; width: 40px; height: 40px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -19px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 3; color: #333; cursor: pointer; }
         .pos-0 { top: 30px; } .pos-1 { top: 100px; } .pos-2 { top: 180px; } .pos-3 { top: 230px; }
         
         #btn-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 80%; max-width: 280px; cursor: pointer; }
+        #btn-start:disabled { background: #ccc; cursor: not-allowed; }
         #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; height: 25px; }
     </style>
 </head>
@@ -50,13 +58,23 @@
     <div class="vip-card">
         <div class="user-info">挑戰者：<b id="display-name">訪客</b></div>
         <b>🎻 羅常秦老師⎜音感訓練大師</b>
+        
         <div style="display:flex; justify-content: space-around; font-size: 0.9rem; color: #D02090; margin-top:5px;">
-            <div>🔥 目前：<span id="combo-now">0</span></div>
-            <div>🏆 個人最高：<span id="combo-max">0</span></div>
+            <div>🔥 目前連擊：<span id="combo-now">0</span></div>
+            <div>🏆 最高紀錄：<span id="combo-max">0</span></div>
+        </div>
+
+        <div class="mode-switch">
+            <span>挑戰模式</span>
+            <label class="switch">
+                <input type="checkbox" id="mode-toggle" onchange="toggleMode()" checked>
+                <span class="slider"></span>
+            </label>
+            <span class="mode-label">練習模式</span>
         </div>
     </div>
 
-    <div id="game-status">準備好了嗎？</div>
+    <div id="game-status">載入中...</div>
 
     <div id="erhu-neck">
         <div class="string">
@@ -78,9 +96,7 @@
     <div class="leaderboard">
         <h3>🏆 今日音感高手榜 (前30名)</h3>
         <div class="score-container" id="score-list">
-            <div class="score-item"><span class="rank">1</span> 羅常秦老師 <span class="val">99+</span></div>
-            <div class="score-item"><span class="rank">2</span> 載入中... <span class="val">-</span></div>
-        </div>
+            </div>
     </div>
 
     <script>
@@ -88,8 +104,8 @@
         let comboCount = 0;
         let maxCombo = parseInt(localStorage.getItem('erhuMaxCombo')) || 0;
         let currentNote = 0;
+        let isPracticeMode = true;
 
-        // 初始化檢查用戶
         window.onload = function() {
             if(currentUser) {
                 document.getElementById('login-overlay').style.display = 'none';
@@ -97,7 +113,18 @@
                 document.getElementById('combo-max').innerText = maxCombo;
             }
             initLeaderboard();
+            toggleMode(); // 初始化模式狀態
         };
+
+        function toggleMode() {
+            isPracticeMode = document.getElementById('mode-toggle').checked;
+            document.getElementById('btn-start').disabled = isPracticeMode;
+            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實音色與唱名" : "挑戰模式：請聽音辨位";
+            
+            // 切換模式重置當前連擊，但不影響最高紀錄
+            comboCount = 0;
+            updateUI(document.getElementById('game-status').innerText);
+        }
 
         function saveUser() {
             const name = document.getElementById('user-name').value;
@@ -106,12 +133,9 @@
                 currentUser = name;
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('display-name').innerText = name;
-            } else {
-                alert("請輸入暱稱喔！");
             }
         }
 
-        // 初始化排行榜佔位 (顯示到30名)
         function initLeaderboard() {
             const list = document.getElementById('score-list');
             let html = '<div class="score-item"><span class="rank">1</span> 羅常秦老師 <span class="val">99+</span></div>';
@@ -121,20 +145,39 @@
             list.innerHTML = html;
         }
 
+        function playErhuFile(num) {
+            let fileName = (num === 8) ? 'd_high1.mp3' : `d${num}.mp3`;
+            const audio = new Audio(fileName);
+            audio.play().catch(e => console.log("音檔讀取中"));
+        }
+
+        function playVoiceName(num) {
+            const audio = new Audio(`v${num}.mp3`);
+            audio.play().catch(e => console.log("唱名音檔讀取中"));
+        }
+
         function handleFretClick(num) {
             playErhuFile(num);
-            if (currentNote === 0) return;
-            if (num === currentNote) {
-                comboCount++;
-                if (comboCount > maxCombo) {
-                    maxCombo = comboCount;
-                    localStorage.setItem('erhuMaxCombo', maxCombo);
-                }
-                updateUI("✨ 正確！");
-                currentNote = 0;
+            
+            if (isPracticeMode) {
+                // 練習模式：延遲播放唱名
+                setTimeout(() => playVoiceName(num), 400);
+                document.getElementById('game-status').innerText = `正在練習：唱名 ${num}`;
             } else {
-                comboCount = 0;
-                updateUI("❌ 斷掉了！");
+                // 挑戰模式
+                if (currentNote === 0) return;
+                if (num === currentNote) {
+                    comboCount++;
+                    if (comboCount > maxCombo) {
+                        maxCombo = comboCount;
+                        localStorage.setItem('erhuMaxCombo', maxCombo);
+                    }
+                    updateUI("✨ 正確！");
+                    currentNote = 0;
+                } else {
+                    comboCount = 0;
+                    updateUI("❌ 斷掉了！");
+                }
             }
         }
 
@@ -142,12 +185,6 @@
             document.getElementById('game-status').innerText = status;
             document.getElementById('combo-now').innerText = comboCount;
             document.getElementById('combo-max').innerText = maxCombo;
-        }
-
-        function playErhuFile(num) {
-            let fileName = (num === 8) ? 'd_high1.mp3' : `d${num}.mp3`;
-            const audio = new Audio(fileName);
-            audio.play().catch(e => console.log("音檔播放失敗"));
         }
 
         function nextQuestion() {
