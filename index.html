@@ -9,44 +9,56 @@
     <style>
         * { box-sizing: border-box; touch-action: manipulation; }
         body { background: #FFF5F7; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; min-height: 100vh; }
-        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 320px; }
-        .vip-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
+        
+        /* 登入遮罩 */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .login-box { background: white; padding: 30px; border-radius: 25px; text-align: center; width: 85%; max-width: 320px; box-shadow: 0 15px 35px rgba(208,32,144,0.2); }
+        
+        /* 挑戰者資訊卡 */
+        .vip-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; position: relative; }
+        .brand-tag { position: absolute; top: -10px; right: 10px; background: #D02090; color: white; font-size: 0.6rem; padding: 2px 8px; border-radius: 10px; }
+
+        /* 膠囊開關 */
         .switch-container { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 8px; cursor: pointer; }
         .switch-box { position: relative; width: 50px; height: 26px; background-color: #ccc; border-radius: 13px; transition: 0.3s; }
         .switch-ball { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: 0.3s; }
         .is-practice .switch-box { background-color: #D02090; }
         .is-practice .switch-ball { left: 27px; }
-        .is-practice #label-practice { color: #D02090; font-weight: bold; }
-        .is-challenge #label-challenge { color: #D02090; font-weight: bold; }
+        
+        /* 二胡指板與千金 */
         .erhu-container { position: relative; width: 220px; display: flex; flex-direction: column; align-items: center; margin: 15px 0; }
         #erhu-neck { position: relative; width: 130px; height: 380px; background: #3d2b1f; border-radius: 10px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; }
         .qianjin-line { position: absolute; top: 48px; left: 0; width: 100%; height: 6px; background: #FFD700; box-shadow: 0 1px 3px rgba(0,0,0,0.5); z-index: 1; }
         .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #aaa, #fff, #aaa); z-index: 2; }
-        .fret { position: absolute; width: 42px; height: 42px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -21px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .fret { position: absolute; width: 44px; height: 44px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -21px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 10; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .pos-0 { top: 30px; } .pos-1 { top: 110px; } .pos-2 { top: 200px; } .pos-3 { top: 240px; }
-        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 220px; margin: 10px 0; cursor: pointer; box-shadow: 0 4px 0 #8B1462; }
-        #btn-game-start:disabled { background: #eee; color: #aaa; box-shadow: none; cursor: not-allowed; }
-        #game-status { color: #D02090; font-weight: bold; margin: 10px 0; height: 22px; text-align: center; }
-        .leaderboard-box { background: white; border: 2px solid #FFD700; border-radius: 15px; padding: 15px; width: 100%; max-width: 340px; margin-top: 15px; }
-        .rank-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
+
+        /* 排行榜與版權宣告 */
+        .leaderboard-box { background: white; border: 2px solid #FFD700; border-radius: 15px; padding: 15px; width: 100%; max-width: 340px; margin-top: 15px; position: relative; }
+        .rank-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #eee; font-size: 0.85rem; }
+        .copyright { font-size: 0.65rem; color: #D02090; text-align: center; margin-top: 15px; border-top: 1px solid #eee; padding-top: 8px; opacity: 0.7; line-height: 1.4; }
+        
+        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 220px; margin: 10px 0; cursor: pointer; box-shadow: 0 4px 0 #8B1462; transition: 0.1s; }
+        #btn-game-start:active { transform: translateY(4px); box-shadow: none; }
     </style>
 </head>
 <body class="is-practice">
 
     <div id="login-overlay">
         <div class="login-box">
-            <h3>創立音樂名冊</h3>
-            <input type="text" id="user-name" placeholder="請輸入您的暱稱" style="width:100%; padding:12px; margin-bottom:20px; border:2px solid #FFB6C1; border-radius:10px; text-align:center;">
-            <button onclick="saveUser()" style="background:#D02090; color:white; border:none; padding:12px 40px; border-radius:25px; font-weight:bold; width:100%;">開始挑戰</button>
+            <h2 style="color:#D02090; margin-top:0;">音樂名冊</h2>
+            <p style="font-size:0.8rem; color:#666;">輸入暱稱開始您的音感之旅</p>
+            <input type="text" id="user-name" placeholder="請輸入您的暱稱" style="width:100%; padding:15px; margin-bottom:20px; border:2px solid #FFB6C1; border-radius:12px; text-align:center; font-size:1rem;">
+            <button onclick="saveUser()" style="background:#D02090; color:white; border:none; padding:15px 40px; border-radius:30px; font-weight:bold; width:100%; font-size:1.1rem; cursor:pointer;">開始挑戰</button>
         </div>
     </div>
 
     <div class="vip-card">
-        <div style="font-size:0.8rem;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
-        <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #D02090; margin:5px 0;">
-            <div>🔥 目前連擊：<span id="combo-now">0</span></div>
-            <div>🏆 最高紀錄：<span id="combo-max">0</span></div>
+        <div class="brand-tag">羅老師專業教學</div>
+        <div style="font-size:0.85rem;">挑戰者：<b id="display-name" style="color:#D02090">載入中...</b></div>
+        <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #D02090; margin:8px 0;">
+            <div>🔥 目前連擊：<span id="combo-now" style="font-weight:bold;">0</span></div>
+            <div>🏆 最高紀錄：<span id="combo-max" style="font-weight:bold;">0</span></div>
         </div>
         <div class="switch-container" onclick="toggleMode()">
             <span id="label-challenge">挑戰模式</span>
@@ -55,24 +67,30 @@
         </div>
     </div>
 
-    <div id="game-status">載入中...</div>
+    <div id="game-status" style="color: #D02090; font-weight: bold; margin: 10px 0; height: 22px;">載入中...</div>
 
     <div class="erhu-container">
         <div id="erhu-neck">
             <div class="qianjin-line"></div>
-            <div class="string"><div class="fret pos-0" onclick="handleFretClick(1)">1</div><div class="fret pos-1" onclick="handleFretClick(2)">2</div><div class="fret pos-2" onclick="handleFretClick(3)">3</div><div class="fret pos-3" onclick="handleFretClick(4)">4</div></div>
-            <div class="string"><div class="fret pos-0" onclick="handleFretClick(5)">5</div><div class="fret pos-1" onclick="handleFretClick(6)">6</div><div class="fret pos-2" onclick="handleFretClick(7)">7</div><div class="fret pos-3" onclick="handleFretClick(8)">i</div></div>
+            <div class="string"><div class="fret pos-0" onclick="hClick(1)">1</div><div class="fret pos-1" onclick="hClick(2)">2</div><div class="fret pos-2" onclick="hClick(3)">3</div><div class="fret pos-3" onclick="hClick(4)">4</div></div>
+            <div class="string"><div class="fret pos-0" onclick="hClick(5)">5</div><div class="fret pos-1" onclick="hClick(6)">6</div><div class="fret pos-2" onclick="hClick(7)">7</div><div class="fret pos-3" onclick="hClick(8)">i</div></div>
         </div>
     </div>
 
-    <button id="btn-game-start" onclick="nextQuestion()">🎧 播放題目音</button>
+    <button id="btn-game-start" onclick="nextQ()">🎧 播放題目音</button>
 
     <div class="leaderboard-box">
-        <div style="text-align:center; font-weight:bold; margin-bottom:10px;">🏆 全球音感高手榜 (TOP 30)</div>
-        <div id="leaderboard-list">載入中...</div>
+        <div style="text-align:center; font-weight:bold; margin-bottom:10px; color:#3d2b1f;">🏆 全球音感高手榜 (TOP 30)</div>
+        <div id="leaderboard-list" style="min-height: 100px;">載入連線中...</div>
+        
+        <div class="copyright">
+            © 2025 羅常秦老師 專業音感教室 版權所有<br>
+            系統受數位著作權保護・盜用必究
+        </div>
     </div>
 
     <script>
+        // Firebase 封閉式載入
         const firebaseConfig = {
           apiKey: "AIzaSyCKiDsQMsk6WkZASHAt9lmj-vZ6UmwO1SQ",
           authDomain: "erhu-leaderboard.firebaseapp.com",
@@ -85,90 +103,69 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let currentUser = localStorage.getItem('erhuUserName') || "";
-        let isPracticeMode = true;
-        let currentNote = 0;
-        let comboCount = 0;
-        let maxCombo = 0;
+        let u = localStorage.getItem('erhuUserName') || "";
+        let isP = true, curN = 0, comb = 0, mComb = 0;
 
-        window.onload = function() {
-            if(currentUser) {
-                document.getElementById('login-overlay').style.display = 'none';
-                loadUserData(currentUser);
-            }
-            updateLeaderboard();
-            updateModeUI();
+        window.onload = () => {
+            if(u) { document.getElementById('login-overlay').style.display='none'; loadU(u); }
+            updLb(); updUI();
         };
 
         function saveUser() {
-            const name = document.getElementById('user-name').value.trim();
-            if(!name) return;
-            currentUser = name;
-            localStorage.setItem('erhuUserName', name);
-            document.getElementById('login-overlay').style.display = 'none';
-            loadUserData(name);
+            const n = document.getElementById('user-name').value.trim();
+            if(!n) return; u = n;
+            localStorage.setItem('erhuUserName', n);
+            document.getElementById('login-overlay').style.display='none';
+            loadU(n);
         }
 
-        function loadUserData(name) {
-            document.getElementById('display-name').innerText = name;
-            db.ref('leaderboard/' + name).once('value', (s) => {
-                if(s.exists()) {
-                    maxCombo = s.val();
-                    document.getElementById('combo-max').innerText = maxCombo;
-                }
+        function loadU(n) {
+            document.getElementById('display-name').innerText = n;
+            db.ref('leaderboard/' + n).once('value', (s) => {
+                if(s.exists()) { mComb = s.val(); document.getElementById('combo-max').innerText = mComb; }
             });
         }
 
-        function updateLeaderboard() {
-            db.ref('leaderboard').orderByValue().limitToLast(30).on('value', (snapshot) => {
-                const list = document.getElementById('leaderboard-list');
+        function updLb() {
+            db.ref('leaderboard').orderByValue().limitToLast(30).on('value', (s) => {
+                const l = document.getElementById('leaderboard-list');
                 let items = [];
-                snapshot.forEach((child) => { items.unshift({ name: child.key, score: child.val() }); });
-                list.innerHTML = items.map((user, i) => `<div class="rank-item"><span>${i+1}. ${user.name}</span><span>${user.score}</span></div>`).join('');
+                s.forEach((c) => { items.unshift({ n: c.key, s: c.val() }); });
+                l.innerHTML = items.map((x, i) => `<div class="rank-item"><span>${i+1}. ${x.n}</span><span>${x.s}</span></div>`).join('');
             });
         }
 
-        function toggleMode() {
-            isPracticeMode = !isPracticeMode;
-            comboCount = 0;
-            document.getElementById('combo-now').innerText = "0";
-            updateModeUI();
+        function toggleMode() { isP = !isP; comb = 0; document.getElementById('combo-now').innerText = "0"; updUI(); }
+
+        function updUI() {
+            document.body.className = isP ? "is-practice" : "is-challenge";
+            document.getElementById('game-status').innerText = isP ? "練習模式：聽真實音色與唱名" : "挑戰模式：請聽音辨位";
+            document.getElementById('btn-game-start').disabled = isP;
         }
 
-        function updateModeUI() {
-            document.body.className = isPracticeMode ? "is-practice" : "is-challenge";
-            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實音色與唱名" : "挑戰模式：請聽音辨位";
-            document.getElementById('btn-game-start').disabled = isPracticeMode;
-        }
-
-        function handleFretClick(num) {
-            new Audio(num === 8 ? 'd_high1.mp3' : `d${num}.mp3`).play();
-            if (isPracticeMode) {
-                setTimeout(() => new Audio(`v${num}.mp3`).play(), 400);
+        function hClick(n) {
+            new Audio(n === 8 ? 'd_high1.mp3' : `d${n}.mp3`).play();
+            if (isP) {
+                setTimeout(() => new Audio(`v${n}.mp3`).play(), 400);
             } else {
-                if (currentNote === 0) return;
-                if (num === currentNote) {
-                    comboCount++;
-                    new Audio('win1.mp3').play();
+                if (curN === 0) return;
+                if (n === curN) {
+                    comb++; new Audio('win1.mp3').play();
                     document.getElementById('game-status').innerText = "✨ 正確！";
-                    if (comboCount > maxCombo) {
-                        maxCombo = comboCount;
-                        db.ref('leaderboard/' + currentUser).set(maxCombo);
-                    }
-                    currentNote = 0;
+                    if (comb > mComb) { mComb = comb; db.ref('leaderboard/' + u).set(mComb); }
+                    curN = 0;
                 } else {
-                    comboCount = 0;
-                    new Audio('lose.mp3').play();
+                    comb = 0; new Audio('lose.mp3').play();
                     document.getElementById('game-status').innerText = "❌ 斷掉了！請重聽";
                 }
-                document.getElementById('combo-now').innerText = comboCount;
-                document.getElementById('combo-max').innerText = maxCombo;
+                document.getElementById('combo-now').innerText = comb;
+                document.getElementById('combo-max').innerText = mComb;
             }
         }
 
-        function nextQuestion() {
-            currentNote = Math.floor(Math.random() * 8) + 1;
-            new Audio(currentNote === 8 ? 'd_high1.mp3' : `d${currentNote}.mp3`).play();
+        function nextQ() {
+            curN = Math.floor(Math.random() * 8) + 1;
+            new Audio(curN === 8 ? 'd_high1.mp3' : `d${curN}.mp3`).play();
             document.getElementById('game-status').innerText = "請聽音辨位...";
         }
     </script>
