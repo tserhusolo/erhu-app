@@ -13,9 +13,12 @@
         .login-box { background: white; padding: 30px; border-radius: 20px; text-align: center; width: 85%; max-width: 300px; }
         .login-box input { width: 100%; padding: 10px; margin: 15px 0; border: 2px solid #FFB6C1; border-radius: 10px; font-size: 1rem; text-align: center; }
         .btn-login { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1.1rem; }
+        
         .vip-card { background: white; padding: 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 10px; border: 2px solid #FFB6C1; text-align: center; width: 100%; max-width: 340px; }
         .user-info { font-size: 0.9rem; color: #666; margin-bottom: 5px; }
         .user-info b { color: #D02090; }
+        
+        /* 模式切換 */
         .mode-switch { background: #FDF2F4; padding: 8px; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.85rem; margin-top: 8px; }
         .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -23,18 +26,65 @@
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #D02090; }
         input:checked + .slider:before { transform: translateX(24px); }
+
+        /* 二胡指板與千金優化 */
+        #erhu-neck { 
+            position: relative; 
+            width: 120px; 
+            height: 380px; 
+            background: #3d2b1f; 
+            border-radius: 5px; 
+            border: 4px solid #2a1d15; 
+            display: flex; 
+            justify-content: space-around; 
+            margin: 15px 0;
+            padding-top: 40px; /* 為千金騰出空間 */
+        }
+        /* 千金橫線 */
+        #erhu-neck::before {
+            content: "";
+            position: absolute;
+            top: 30px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #D4AF37; /* 金色千金 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            z-index: 5;
+        }
+        .string { position: relative; width: 3px; height: 100%; background: linear-gradient(to right, #aaa, #fff, #aaa); }
+        .fret { 
+            position: absolute; 
+            width: 44px; 
+            height: 34px; 
+            background: rgba(255, 255, 255, 0.9); 
+            border: 2px solid #FFB6C1; 
+            border-radius: 15px; /* 橢圓設計 */
+            left: -21px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: bold; 
+            z-index: 10; 
+            color: #333; 
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        .fret:active { transform: scale(0.9); background: #FFB6C1; }
+        .pos-0 { top: 30px; } .pos-1 { top: 100px; } .pos-2 { top: 180px; } .pos-3 { top: 250px; }
+        
+        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 80%; max-width: 280px; cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 0 #8B1462; transition: all 0.1s; }
+        #btn-game-start:active { transform: translateY(3px); box-shadow: none; }
+        #btn-game-start:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
+        
+        #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin: 10px 0; height: 25px; text-align: center; }
+
         .leaderboard { width: 100%; max-width: 340px; background: white; border-radius: 20px; padding: 15px; margin-top: 20px; border: 2px solid #FFD700; }
         .leaderboard h3 { margin: 0 0 10px 0; color: #B8860B; font-size: 1.1rem; text-align: center; }
         .score-container { max-height: 250px; overflow-y: auto; }
         .score-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; font-size: 0.95rem; }
         .rank { font-weight: bold; color: #D02090; width: 35px; }
-        #erhu-neck { position: relative; width: 100px; height: 320px; background: #3d2b1f; border-radius: 10px; border: 4px solid #2a1d15; display: flex; justify-content: space-around; margin: 10px 0; }
-        .string { position: relative; width: 2px; height: 100%; background: linear-gradient(to right, #999, #eee, #999); }
-        .fret { position: absolute; width: 40px; height: 40px; background: white; border: 2px solid #FFB6C1; border-radius: 50%; left: -19px; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 3; color: #333; cursor: pointer; }
-        .pos-0 { top: 30px; } .pos-1 { top: 100px; } .pos-2 { top: 180px; } .pos-3 { top: 230px; }
-        #btn-game-start { background: #D02090; color: white; border: none; padding: 12px 40px; border-radius: 30px; font-weight: bold; width: 80%; max-width: 280px; cursor: pointer; font-size: 1.1rem; }
-        #btn-game-start:disabled { background: #ccc; cursor: not-allowed; }
-        #game-status { color: #D02090; font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; height: 25px; text-align: center; }
     </style>
 </head>
 <body>
@@ -85,15 +135,11 @@
 
     <div class="leaderboard">
         <h3>🏆 全球音感高手榜 (TOP 30)</h3>
-        <div class="score-container" id="score-list">
-            <div style="text-align: center; padding: 20px; color: #999;">正在連線雲端榜單...</div>
-        </div>
+        <div class="score-container" id="score-list"></div>
     </div>
 
-    <a href="https://www.facebook.com/erhutslo/" target="_blank" style="margin-top: 15px; text-decoration: none; color: #D02090; font-size: 0.85rem; border: 1px solid #FFB6C1; padding: 5px 15px; border-radius: 20px; background: white;">🔗 跨界二胡玩家羅常秦｜粉專</a>
-
     <script>
-        // --- Firebase 配置 ---
+        // Firebase 配置 (使用您提供的正確資訊)
         const firebaseConfig = {
           apiKey: "AIzaSyCKiDsQMsk6WkZASHAt9lmj-vZ6UmwO1SQ",
           authDomain: "erhu-leaderboard.firebaseapp.com",
@@ -120,14 +166,14 @@
                 document.getElementById('display-name').innerText = currentUser;
                 document.getElementById('combo-max').innerText = maxCombo;
             }
-            listenLeaderboard(); // 開始監聽雲端排行榜
+            listenLeaderboard();
             toggleMode();
         };
 
         function toggleMode() {
             isPracticeMode = document.getElementById('mode-toggle').checked;
             document.getElementById('btn-game-start').disabled = isPracticeMode;
-            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽音色與唱名" : "挑戰模式：請聽音辨位";
+            document.getElementById('game-status').innerText = isPracticeMode ? "練習模式：聽真實音色與唱名" : "挑戰模式：請聽音辨位";
             comboCount = 0;
             updateUI(document.getElementById('game-status').innerText);
         }
@@ -139,12 +185,10 @@
                 currentUser = name;
                 document.getElementById('login-overlay').style.display = 'none';
                 document.getElementById('display-name').innerText = name;
-                // 初次登入也更新一次分數到雲端
                 updateCloudScore(maxCombo);
             }
         }
 
-        // 監聽雲端排行榜數據
         function listenLeaderboard() {
             db.ref('leaderboard').orderByValue().limitToLast(30).on('value', (snapshot) => {
                 const list = document.getElementById('score-list');
@@ -152,13 +196,12 @@
                 snapshot.forEach((child) => {
                     scores.push({ name: child.key, score: child.val() });
                 });
-                scores.reverse(); // 由高到低排序
+                scores.reverse();
 
                 let html = '';
                 scores.forEach((item, index) => {
                     html += `<div class="score-item"><span class="rank">${index + 1}</span> ${item.name} <span class="val">${item.score}</span></div>`;
                 });
-                // 如果榜單不足 30 人，補上空位
                 for(let i = scores.length + 1; i <= 30; i++) {
                     html += `<div class="score-item"><span class="rank">${i}</span> --- <span class="val">-</span></div>`;
                 }
@@ -166,9 +209,8 @@
             });
         }
 
-        // 更新分數到雲端
         function updateCloudScore(score) {
-            if (!currentUser) return;
+            if (!currentUser || isPracticeMode) return;
             db.ref('leaderboard/' + currentUser).set(score);
         }
 
@@ -198,7 +240,7 @@
                     if (comboCount > maxCombo) {
                         maxCombo = comboCount;
                         localStorage.setItem('erhuMaxCombo', maxCombo);
-                        updateCloudScore(maxCombo); // 最高紀錄更新時傳送到雲端
+                        updateCloudScore(maxCombo);
                     }
                     playSoundFile('win');
                     updateUI("✨ 正確！");
