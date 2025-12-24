@@ -5,19 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>剴韻坊 - 音感訓練大師</title>
     <style>
-        :root {
-            --primary-color: #4A90E2;
-            --bg-color: #f5f7fa;
-        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            background-color: #f5f7fa;
             margin: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            touch-action: manipulation;
         }
         .container {
             background: white;
@@ -39,12 +34,12 @@
         }
         .stat-item { flex: 1; }
         .stat-label { font-size: 0.7rem; color: #666; display: block; }
-        .stat-value { font-size: 1.1rem; font-weight: bold; color: var(--primary-color); }
+        .stat-value { font-size: 1.1rem; font-weight: bold; color: #4A90E2; }
         .note-display {
             font-size: 4rem;
             margin: 30px 0;
             height: 80px;
-            color: var(--primary-color);
+            color: #4A90E2;
             font-weight: bold;
             display: flex;
             justify-content: center;
@@ -59,16 +54,14 @@
         button {
             padding: 15px;
             font-size: 1.1rem;
-            border: 2px solid #eee;
+            border: 1px solid #eee;
             border-radius: 12px;
             background: white;
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 500;
         }
-        button:active { transform: scale(0.95); }
-        .correct { background-color: #4CAF50 !important; color: white !important; border-color: #4CAF50 !important; }
-        .wrong { background-color: #f44336 !important; color: white !important; border-color: #f44336 !important; }
+        button:active { transform: scale(0.95); background-color: #f8f9fa; }
         
         .leaderboard-box {
             margin-top: 25px;
@@ -79,8 +72,6 @@
         #leaderboard-list {
             font-size: 0.85rem;
             color: #555;
-            max-height: 150px;
-            overflow-y: auto;
             line-height: 1.6;
         }
         .footer-area {
@@ -134,16 +125,20 @@
         <button onclick="checkAnswer('Do')">Do</button>
         <button onclick="checkAnswer('Re')">Re</button>
         <button onclick="checkAnswer('Mi')">Mi</button>
-        <button onclick="checkAnswer('Fa')">Fa</button>
+        <button onclick="checkAnswer('Fa') musical">Fa</button>
         <button onclick="checkAnswer('Sol')">Sol</button>
         <button onclick="checkAnswer('La')">La</button>
         <button onclick="checkAnswer('Si')">Si</button>
-        <button onclick="nextQuestion()">下一題</button>
+        <button style="font-weight: bold;" onclick="nextQuestion()">下一題</button>
     </div>
 
     <div class="leaderboard-box">
         <div style="text-align:center; font-weight:bold; margin-bottom:10px; color:#333;">🏆 剴韻坊音感高手榜 (TOP 30)</div>
-        <div id="leaderboard-list">連線中...</div>
+        <div id="leaderboard-list">
+            1. 羅老師 - 999<br>
+            2. 學生A - 850<br>
+            3. 學生B - 720
+        </div>
         
         <div class="footer-area">
             <div class="copyright-text">
@@ -157,25 +152,13 @@
 </div>
 
 <script>
-    // 這裡保留您原本所有的音感大師 JavaScript 邏輯
-    // 包含播放聲音、檢查答案、排行榜更新等功能
-    // 為了保持完整性，請確保您將原本的 Script 內容貼在此處
-    let score = 0;
-    let combo = 0;
-    let maxCombo = 0;
-
+    // 請在此處貼上您原本完整的 JavaScript 功能邏輯
     function checkAnswer(answer) {
-        console.log("使用者選擇了: " + answer);
-        // 原有邏輯...
+        console.log("選擇: " + answer);
     }
-
     function nextQuestion() {
-        document.getElementById('note-display').innerText = "?";
-        // 原有邏輯...
+        console.log("下一題");
     }
-
-    // 排行榜模擬顯示
-    document.getElementById('leaderboard-list').innerHTML = "1. 羅老師 - 999<br>2. 學生A - 850<br>3. 學生B - 720";
 </script>
 
 </body>
