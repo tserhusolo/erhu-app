@@ -3,163 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>剴韻坊 - 音感訓練大師</title>
+    <title>羅常秦老師⎜節奏訓練大師</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f5f7fa;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .container {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 90%;
-            max-width: 400px;
-        }
-        h1 { color: #333; margin-bottom: 10px; font-size: 1.5rem; }
-        .stats-container {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 12px;
-        }
-        .stat-item { flex: 1; }
-        .stat-label { font-size: 0.7rem; color: #666; display: block; }
-        .stat-value { font-size: 1.1rem; font-weight: bold; color: #4A90E2; }
-        .note-display {
-            font-size: 4rem;
-            margin: 30px 0;
-            height: 80px;
-            color: #4A90E2;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 15px;
-            font-size: 1.1rem;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        button:active { transform: scale(0.95); background-color: #f8f9fa; }
+        * { box-sizing: border-box; touch-action: manipulation; }
+        body { background: #F0F7FF; font-family: "Microsoft JhengHei", sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; min-height: 100vh; }
         
-        .leaderboard-box {
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 2px dashed #eee;
-            text-align: left;
-        }
-        #leaderboard-list {
-            font-size: 0.85rem;
-            color: #555;
-            line-height: 1.6;
-        }
-        .footer-area {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 15px;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
-        .copyright-text {
-            font-size: 0.65rem;
-            color: #4A90E2;
-            text-align: left;
-            opacity: 0.8;
-        }
-        .footer-logo {
-            width: 60px;
-            height: auto;
-            margin-left: 10px;
-        }
-        .fb-link {
-            text-decoration: none;
-            color: #1877F2;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.75rem;
-        }
+        /* 頁面切換按鈕 */
+        .nav-link { position: absolute; top: 15px; left: 15px; background: #4A90E2; color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.8rem; text-decoration: none; font-weight: bold; box-shadow: 0 4px 10px rgba(74,144,226,0.3); }
+
+        .vip-card { background: white; padding: 25px 15px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border: 2px solid #4A90E2; text-align: center; width: 100%; max-width: 340px; margin-top: 50px; }
+        .main-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; color: #333; }
+        
+        /* 節奏顯示區 */
+        #rhythm-display { background: #f9f9f9; border: 2px dashed #ccc; border-radius: 12px; height: 80px; margin: 15px 0; display: flex; align-items: center; justify-content: center; gap: 15px; font-size: 1.8rem; font-weight: bold; }
+        .answer-block { padding: 5px 10px; background: #e3f2fd; border-radius: 8px; min-width: 40px; text-align: center; }
+
+        /* 節奏拼圖方塊 */
+        .option-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; max-width: 340px; margin-top: 15px; }
+        .rhythm-btn { background: white; border: 2px solid #4A90E2; border-radius: 15px; padding: 15px; font-size: 1.5rem; font-weight: bold; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 0 #357ABD; }
+        .rhythm-btn:active { transform: translateY(3px); box-shadow: none; }
+        .rhythm-btn span { display: block; font-size: 0.7rem; color: #666; margin-top: 5px; }
+
+        .leaderboard-box { background: white; border: 2px solid #FFD700; border-radius: 15px; padding: 15px; width: 100%; max-width: 340px; margin-top: 15px; }
+        .footer-area { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+        .copyright-text { font-size: 0.65rem; color: #4A90E2; text-align: left; opacity: 0.8; flex: 1; }
+        .footer-logo { width: 60px; height: auto; margin-left: 10px; }
+
+        #btn-play-task { background: #4A90E2; color: white; border: none; padding: 15px 40px; border-radius: 30px; font-weight: bold; width: 220px; margin: 15px 0; cursor: pointer; box-shadow: 0 4px 0 #2c5d94; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>音感訓練大師</h1>
-    
-    <div class="stats-container">
-        <div class="stat-item">
-            <span class="stat-label">分數</span>
-            <span id="score" class="stat-value">0</span>
+    <a href="index.html" class="nav-link">🎻 回音感教室</a>
+
+    <div class="vip-card">
+        <div class="main-title">羅常秦老師｜節奏訓練大師</div>
+        <div style="font-size:0.9rem;">挑戰者：<b id="display-name" style="color:#4A90E2">載入中...</b></div>
+        
+        <div id="rhythm-display">
+            <div id="ans-1" class="answer-block">?</div>
+            <div id="ans-2" class="answer-block">?</div>
         </div>
-        <div class="stat-item">
-            <span class="stat-label">最高連擊</span>
-            <span id="combo" class="stat-value">0</span>
+
+        <div style="display:flex; justify-content: space-around; font-size: 0.85rem; color: #4A90E2; margin-bottom: 5px;">
+            <div>🥁 目前連擊：<span id="combo-now">0</span></div>
+            <div>🏆 節奏紀錄：<span id="combo-max">0</span></div>
         </div>
     </div>
 
-    <div id="note-display" class="note-display">?</div>
+    <button id="btn-play-task" onclick="playTask()">🎧 播放節奏題目</button>
 
-    <div class="options-grid" id="options">
-        <button onclick="checkAnswer('Do')">Do</button>
-        <button onclick="checkAnswer('Re')">Re</button>
-        <button onclick="checkAnswer('Mi')">Mi</button>
-        <button onclick="checkAnswer('Fa') musical">Fa</button>
-        <button onclick="checkAnswer('Sol')">Sol</button>
-        <button onclick="checkAnswer('La')">La</button>
-        <button onclick="checkAnswer('Si')">Si</button>
-        <button style="font-weight: bold;" onclick="nextQuestion()">下一題</button>
+    <div class="option-container">
+        <button class="rhythm-btn" onclick="checkAns('1 -')">1 - <span>一拍 (1.0)</span></button>
+        <button class="rhythm-btn" onclick="checkAns('5 5')">5 5 <span>半拍 (0.5+0.5)</span></button>
+        <button class="rhythm-btn" onclick="checkAns('1. 5')">1. 5 <span>附點 (0.75+0.25)</span></button>
+        <button class="rhythm-btn" onclick="checkAns('0')">0 <span>空拍 (休止)</span></button>
     </div>
 
     <div class="leaderboard-box">
-        <div style="text-align:center; font-weight:bold; margin-bottom:10px; color:#333;">🏆 剴韻坊音感高手榜 (TOP 30)</div>
-        <div id="leaderboard-list">
-            1. 羅老師 - 999<br>
-            2. 學生A - 850<br>
-            3. 學生B - 720
-        </div>
-        
+        <div style="text-align:center; font-weight:bold; margin-bottom:10px;">🏆 全球節奏高手榜 (TOP 30)</div>
+        <div id="leaderboard-list">連線中...</div>
         <div class="footer-area">
-            <div class="copyright-text">
-                <a href="https://www.facebook.com/erhutslo/" target="_blank" class="fb-link">🔗 前往粉絲專頁</a>
-                © 2025 剴韻坊版權所有<br>
-                系統受數位著作權保護
-            </div>
+            <div class="copyright-text">© 2025 剴韻坊版權所有<br>系統受數位著作權保護</div>
             <img src="logo.jpg" class="footer-logo" alt="剴韻坊">
         </div>
     </div>
-</div>
 
-<script>
-    // 請在此處貼上您原本完整的 JavaScript 功能邏輯
-    function checkAnswer(answer) {
-        console.log("選擇: " + answer);
-    }
-    function nextQuestion() {
-        console.log("下一題");
-    }
-</script>
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyCKiDsQMsk6WkZASHAt9lmj-vZ6UmwO1SQ",
+          authDomain: "erhu-leaderboard.firebaseapp.com",
+          databaseURL: "https://erhu-leaderboard-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "erhu-leaderboard",
+          storageBucket: "erhu-leaderboard.firebasestorage.app",
+          messagingSenderId: "10526902650",
+          appId: "1:10526902650:web:8052eef341e5338d202ec3"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        
+        let u = localStorage.getItem('erhuUserName') || "";
+        let comb = 0, mComb = 0, currentTask = [], userChoice = [];
+        const options = ['1 -', '5 5', '1. 5', '0'];
 
+        window.onload = () => {
+            if(!u) { location.href = 'index.html'; } // 強制先在首頁登入
+            document.getElementById('display-name').innerText = u;
+            loadRecord();
+            updLb();
+        };
+
+        function loadRecord() {
+            db.ref('rhythm_leaderboard/' + u).once('value', (s) => {
+                if(s.exists()) { mComb = s.val(); document.getElementById('combo-max').innerText = mComb; }
+            });
+        }
+
+        function playTask() {
+            userChoice = [];
+            document.getElementById('ans-1').innerText = "?";
+            document.getElementById('ans-2').innerText = "?";
+            
+            // 隨機產生兩拍的題目
+            currentTask = [options[Math.floor(Math.random()*4)], options[Math.floor(Math.random()*4)]];
+            
+            // 模擬播放節奏 (此處需羅老師未來提供木魚音效檔，暫以系統音代替)
+            alert("題目準備播放：請仔細聽節奏脈動...");
+            console.log("題目內容：", currentTask);
+            // 這裡是未來串接音效播放邏輯的地方
+        }
+
+        function checkAns(val) {
+            if(currentTask.length === 0) return;
+            userChoice.push(val);
+            document.getElementById(`ans-${userChoice.length}`).innerText = val;
+
+            if(userChoice.length === 2) {
+                if(JSON.stringify(userChoice) === JSON.stringify(currentTask)) {
+                    comb++;
+                    alert("✨ 太棒了！節奏完全正確！");
+                    if(comb > mComb) { mComb = comb; db.ref('rhythm_leaderboard/' + u).set(mComb); }
+                } else {
+                    comb = 0;
+                    alert("❌ 節奏有點誤差喔，再試一次！");
+                }
+                document.getElementById('combo-now').innerText = comb;
+                document.getElementById('combo-max').innerText = mComb;
+                currentTask = [];
+            }
+        }
+
+        function updLb() {
+            db.ref('rhythm_leaderboard').orderByValue().limitToLast(30).on('value', (s) => {
+                const l = document.getElementById('leaderboard-list');
+                let items = [];
+                s.forEach((c) => { items.unshift({ n: c.key, s: c.val() }); });
+                l.innerHTML = items.map((x, i) => `<div style="display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px dashed #eee; font-size:0.85rem;"><span>${i+1}. ${x.n}</span><span>${x.s}</span></div>`).join('');
+            });
+        }
+    </script>
 </body>
 </html>
